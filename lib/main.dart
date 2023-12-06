@@ -1,3 +1,4 @@
+import 'package:dogbreed/Practice/breeds_ui.dart';
 import 'package:dogbreed/Practice/home_ui.dart';
 import 'package:dogbreed/breeds_UI.dart';
 import 'package:dogbreed/gallery_select.dart';
@@ -37,7 +38,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: Example(),
+      home: Home(),
     );
   }
 }

@@ -20,7 +20,8 @@ class HomeUIState extends State<HomeUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        /*title: Text('My App'),*/
+title: Text('My App'),
+
       ),
       body: Center(
         child: Column(
@@ -38,12 +39,12 @@ class HomeUIState extends State<HomeUI> {
               child: const Text("Take a Picture"),
             ),
             SizedBox(height: 16), // Add some spacing between the buttons
-            ElevatedButton(
+            /*ElevatedButton(
               onPressed: () async {
                 await _pickImages();
               },
               child: Text('Pick Images'),
-            ),
+            ),*/
 
           ],
         ),
@@ -87,7 +88,7 @@ class HomeUIState extends State<HomeUI> {
     );
   }
 
-  Future<void> _pickImages() async {
+Future<void> _pickImages() async {
     // Add your logic for picking images here using image_picker package
     try {
       List<XFile> pickedImages = await ImagePicker().pickMultiImage();
@@ -108,4 +109,5 @@ class HomeUIState extends State<HomeUI> {
       print("Error picking images: $e");
     }
   }
+
 }
