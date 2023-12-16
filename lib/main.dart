@@ -1,5 +1,5 @@
-import 'package:dogbreed/Practice/breeds_ui.dart';
-import 'package:dogbreed/Practice/home_ui.dart';
+import 'package:dogbreed/Project/breeds_ui.dart';
+import 'package:dogbreed/Project/home_ui.dart';
 import 'package:dogbreed/breeds_UI.dart';
 import 'package:dogbreed/gallery_select.dart';
 import 'package:dogbreed/homeUI.dart';

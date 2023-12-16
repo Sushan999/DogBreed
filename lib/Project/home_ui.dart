@@ -5,8 +5,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
-import '../camera_page.dart';
-import 'documents.dart';
+import 'breeds_ui.dart';
+import 'camera_page.dart';
+import '../Practice/documents.dart';
 
 class Home extends StatefulWidget {
   @override
@@ -27,9 +28,9 @@ class _HomeState extends State<Home> {
 
     return Scaffold(
       appBar: AppBar(
-
         backgroundColor: Colors.white,
         elevation: 0,
+        automaticallyImplyLeading: false,
         toolbarHeight: 90.0,  // Set the desired height of the AppBar
         title: Column(
           children: [
@@ -69,7 +70,6 @@ class _HomeState extends State<Home> {
                     context,
                     MaterialPageRoute(builder: (_) => CameraPage(cameras: cameras!)),
                   );
-
                 },
                 child: Container(
                   width: 350,
@@ -100,40 +100,95 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-
-
             ],
-
           ),
 
           Padding(
-            padding: const EdgeInsets.only(left: 20,top: 20),
+            padding: const EdgeInsets.only(left: 20, top: 20),
             child: Align(
               alignment: Alignment.bottomLeft,
-              child: Text("Popular Dog Breeds",style: TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold
-              ),),
+              child: Text(
+                "Popular Dog Breeds",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
             ),
           ),
           Padding(
-            padding: const EdgeInsets.only(left: 20,right: 20),
+            padding: const EdgeInsets.only(left: 20, right: 20),
             child: Align(
               alignment: Alignment.bottomRight,
-              child: Text("View All",style: TextStyle(
-                  fontSize: 15,
-                  fontWeight: FontWeight.bold,
-                color: Colors.green
-              ),),
+              child: Text(
+                "View All",
+                style: TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
             ),
           ),
-          Ads()
+          Container(
+            height: 190,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 9,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 150,
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.green.withOpacity(0.3),
+                  ),
+                  child: Image.asset(
+                    'assets/images/3904.png',
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                "Recommended for you",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                "View All",
+                style: TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ),
+          ),
+
+          // Add the vertical ListView.builder here
+          Expanded(
+            child: Container(
+              height: 190,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: 9,
+                itemBuilder: (context, index) {
+                  return Container(
+                    height: 150,
+                    margin: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.withOpacity(0.3),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
         ],
       ),
-
-
-
-
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: Colors.white,
@@ -151,7 +206,7 @@ class _HomeState extends State<Home> {
               rippleColor: Colors.grey[300]!,
               hoverColor: Colors.grey[100]!,
               gap: 8,
-              activeColor: Colors.black,
+              activeColor: Colors.red,
               iconSize: 24,
               padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
               duration: Duration(milliseconds: 400),
@@ -161,22 +216,29 @@ class _HomeState extends State<Home> {
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
-                  textStyle: TextStyle(color: Colors.black),
+                  textStyle: TextStyle(color: _selectedIndex == 0 ? Colors.red : Colors.black),
                 ),
                 GButton(
                   icon: LineIcons.paw,
                   text: 'Breeds',
-                  textStyle: TextStyle(color: Colors.black),
+                  textStyle: TextStyle(color: _selectedIndex == 1 ? Colors.red : Colors.black),
+                  onPressed: () {
+                    // Navigate to Breeds screen
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => Breeds()),
+                    );
+                  },
                 ),
                 GButton(
                   icon: LineIcons.heart,
                   text: 'Saved',
-                  textStyle: TextStyle(color: Colors.black),
+                  textStyle: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black),
                 ),
                 GButton(
                   icon: LineIcons.medkit,
                   text: 'Care',
-                  textStyle: TextStyle(color: Colors.black),
+                  textStyle: TextStyle(color: _selectedIndex == 3 ? Colors.red : Colors.black),
                 ),
               ],
               selectedIndex: _selectedIndex,

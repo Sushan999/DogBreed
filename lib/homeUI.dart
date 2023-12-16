@@ -3,7 +3,7 @@ import 'package:camera/camera.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io' as io;
 
-import 'camera_page.dart';
+import 'Project/camera_page.dart';
 import 'preview_page.dart'; // Import your PreviewPage
 
 class HomeUI extends StatefulWidget {
