@@ -12,6 +12,15 @@ class HomeUI extends StatefulWidget {
 }
 
 class HomeUIState extends State<HomeUI> {
+  static int selectedIndex = 0;
+  onTappedBar(int value) {
+    setState(() {
+      selectedIndex = value;
+    });
+    _pageController.jumpToPage(value);
+  }
+  final PageController _pageController = PageController();
+
   int currentIndex = 0;
   List<CameraDescription>? cameras;
   List<io.File>? _imageList;
