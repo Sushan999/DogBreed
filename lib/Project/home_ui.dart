@@ -20,7 +20,10 @@ class _HomeState extends State<Home> {
 
   @override
   Widget build(BuildContext context) {
+<<<<<<< HEAD
     var size = MediaQuery.of(context).size;
+=======
+>>>>>>> origin/master
     // Set the system overlay style to match the app's UI color
     SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
       statusBarColor: Colors.white,
@@ -59,6 +62,7 @@ class _HomeState extends State<Home> {
           ),
         ],
       ),
+<<<<<<< HEAD
 
       body: SingleChildScrollView(
         child: Container(
@@ -190,12 +194,142 @@ class _HomeState extends State<Home> {
                         ),
                       );
                     },
+=======
+      body: Column(
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              InkWell(
+                onTap: () async {
+                  cameras = await availableCameras();
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => CameraPage(cameras: cameras!)),
+                  );
+                },
+                child: Container(
+                  width: 350,
+                  padding: EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20.0),
+                    color: Colors.green.withOpacity(0.2), // Set the background color to transparent green
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        '  Scan and identify the doggo ',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w400,
+                          color: Colors.green,
+                        ),
+                      ),
+                      SizedBox(width: 10), // Add some spacing between the text and the icon
+                      Icon(
+                        Icons.qr_code_scanner_outlined,
+                        size: 24,
+                        color: Colors.green,
+                      ),
+                      // Add other widgets here if needed
+                    ],
+>>>>>>> origin/master
                   ),
                 ),
               ),
             ],
           ),
+<<<<<<< HEAD
         ),
+=======
+
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                "Popular Dog Breeds",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                "View All",
+                style: TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ),
+          ),
+          Container(
+            height: 190,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 9,
+              itemBuilder: (context, index) {
+                return Container(
+                  width: 150,
+                  margin: EdgeInsets.all(8),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: Colors.green.withOpacity(0.3),
+                  ),
+                  child: Image.asset(
+                    'assets/images/3904.png',
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, top: 20),
+            child: Align(
+              alignment: Alignment.bottomLeft,
+              child: Text(
+                "Recommended for you",
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+              ),
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20, right: 20),
+            child: Align(
+              alignment: Alignment.bottomRight,
+              child: Text(
+                "View All",
+                style: TextStyle(
+                    fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+              ),
+            ),
+          ),
+
+          // Add the vertical ListView.builder here
+          Expanded(
+            child: Container(
+              height: 190,
+              child: ListView.builder(
+                scrollDirection: Axis.vertical,
+                itemCount: 9,
+                itemBuilder: (context, index) {
+                  return Container(
+                    height: 150,
+                    margin: EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green.withOpacity(0.3),
+                    ),
+                  );
+                },
+              ),
+            ),
+          ),
+        ],
+>>>>>>> origin/master
       ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
