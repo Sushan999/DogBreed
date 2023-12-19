@@ -15,6 +15,20 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+
+  List<String> imageList = [
+    'assets/images/1.jpg',
+    'assets/images/2.jpg',
+    'assets/images/3.jpg',
+    'assets/images/4.jpg',
+    'assets/images/5.jpg',
+    'assets/images/6.jpg',
+    'assets/images/7.jpg',
+    'assets/images/8.jpg',
+
+    // Add more image paths as needed
+  ];
+
   int _selectedIndex = 0;
   List<CameraDescription>? cameras;
 
@@ -133,7 +147,7 @@ class _HomeState extends State<Home> {
                 height: 190,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 9,
+                  itemCount: imageList.length,
                   itemBuilder: (context, index) {
                     return Container(
                       width: 150,
@@ -143,7 +157,7 @@ class _HomeState extends State<Home> {
                         color: Colors.green.withOpacity(0.3),
                       ),
                       child: Image.asset(
-                        'assets/images/3904.png',
+                        imageList[index],
                         fit: BoxFit.cover,
                       ),
                     );
@@ -178,7 +192,7 @@ class _HomeState extends State<Home> {
                   height: 190,
                   child: ListView.builder(
                     scrollDirection: Axis.vertical,
-                    itemCount: 9,
+                    itemCount: 8,
                     itemBuilder: (context, index) {
                       return Container(
                         height: 150,
