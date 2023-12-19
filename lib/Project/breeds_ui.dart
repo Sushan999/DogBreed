@@ -20,12 +20,12 @@ class _BreedsState extends State<Breeds> {
     'assets/images/6.jpg',
     'assets/images/7.jpg',
     'assets/images/8.jpg',
-    'assets/images/8.jpg',
-    'assets/images/8.jpg',
+    'assets/images/9.png',
+    'assets/images/10.png',
     // Add more image paths as needed
   ];
 
-  List<String> nameList = ["Golden Retriever", "German Shephard", "Pug", "Husky", "Chihuahua", "Shiba Inu", "Boxer", "Boston Terrier", "S", "T"];
+  List<String> nameList = ["Golden Retriever", "German Shephard", "Pug", "Husky", "Chihuahua", "Shiba Inu", "Boxer", "Boston Terrier", "Bulldog", "Rottweiler"];
 
 
   List<String> detailsList = [
@@ -38,8 +38,9 @@ class _BreedsState extends State<Breeds> {
     "Shiba Inus are independent and spirited. They are a Japanese breed known for their fox-like appearance. Shiba Inus, with their distinct curled tails and fox-like faces, have a spirited independence that sets them apart. While they may be reserved around strangers, their loyalty and affectionate nature shine through in the bonds they form with their families.",
     "Boxers are playful, energetic, and loyal. They are great with children and make excellent companions. Boxers' boundless energy and enthusiasm make them ideal playmates for children, and their protective instincts ensure a watchful eye over their loved ones. Their affectionate nature and love for fun and games make them wonderful additions to active households.",
     "Boston Terriers are friendly, intelligent, and affectionate. They have a tuxedo-like coat pattern. Boston Terriers' distinctive black and white coat patterns, coupled with their friendly demeanor, make them both charming and elegant companions. Their intelligence and adaptability contribute to their success as family pets, and their affectionate nature ensures a devoted bond with their owners.",
-    "Details for Dog 1", // Replace with actual details
-    "Details for Dog 2", // Replace with actual details
+    "Bulldogs are known for their sturdy build, distinctive wrinkled face, and friendly disposition. They make excellent family companions with a calm demeanor, especially good with children. Despite their muscular appearance, Bulldogs are generally low-energy, making them suitable for various living situations. Their determination and loyalty, coupled with their endearing wrinkles, add to their charm.", // Replace with actual details
+
+    "Rottweilers are known for their strength, loyalty, and confident demeanor. They make excellent family pets. With their robust build and protective instincts, Rottweilers are often used as guard dogs, excelling in roles that require vigilance and loyalty. Rottweilers form strong bonds with their families and are known for their affectionate nature, making them devoted companions in both work and home environments.", // Replace with actual details
   ];
 
   List<bool> _isExpandedList = List.generate(10, (index) => false);
@@ -137,8 +138,8 @@ class _BreedsState extends State<Breeds> {
                             ClipOval(
                               child: Image.asset(
                                 imageList[index],
-                                width: _isExpandedList[index] ? 120 : 60,
-                                height: _isExpandedList[index] ? 120 : 60,
+                                width: _isExpandedList[index] ? 120 : 65,
+                                height: _isExpandedList[index] ? 120 : 65,
                                 fit: BoxFit.cover,
                               ),
                             ),
