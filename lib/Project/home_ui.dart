@@ -1,4 +1,5 @@
 import 'package:camera/camera.dart';
+import 'package:dogbreed/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -255,6 +256,11 @@ class _HomeState extends State<Home> {
                   icon: LineIcons.heart,
                   text: 'Saved',
                   textStyle: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black),
+                  onPressed: () {
+                    // Navigate to Breeds screen
+                    predicted();
+
+                  },
                 ),
                 GButton(
                   icon: LineIcons.medkit,

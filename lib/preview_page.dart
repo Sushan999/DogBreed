@@ -2,13 +2,13 @@ import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 import 'package:image/image.dart' as img;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
 
 class PreviewPage extends StatelessWidget {
   const PreviewPage({Key? key, required this.picture}) : super(key: key);
 
   final XFile picture;
-
-  get http => null;
 
   void onButtonPressed() {
     // Add your custom functionality here
@@ -16,8 +16,9 @@ class PreviewPage extends StatelessWidget {
     print('Button Pressed!');
   }
 
-  Future<void> predictEfficientNetDogBreed(File imageFile) async {
-    final uri = Uri.parse('https://your-django-backend/predict_efficientnet_dog_bred/');
+  Future<String> predictEfficientNetDogBreed(File imageFile) async {
+    // var client = http.Client();
+    final uri = Uri.parse('http://192.168.254.198:8000/recognition/predict/');
 
     // Create a multipart request
     var request = http.MultipartRequest('POST', uri)
@@ -26,14 +27,18 @@ class PreviewPage extends StatelessWidget {
     try {
       var response = await request.send();
       if (response.statusCode == 200) {
+        var json = await response.stream.bytesToString();
         // Successfully received the prediction, handle the response
-        print('Prediction: ${await response.stream.bytesToString()}');
+        print('Prediction: ${json}');
+        return json;
       } else {
         // Handle errors
         print('Error: ${response.statusCode}');
+        return response.statusCode.toString();
       }
     } catch (e) {
       print('Error: $e');
+      return e.toString();
     }
   }
 
@@ -49,7 +54,8 @@ class PreviewPage extends StatelessWidget {
           const SizedBox(height: 24),
           ElevatedButton(
             onPressed: () async {
-              Image image = Image.file(File(picture.path));
+              File imageFile = File(picture.path);
+              var json = predictEfficientNetDogBreed(imageFile);
               // Add your button's functionality here
               // For example, you can navigate to another page or perform some action.
             },
@@ -58,5 +64,16 @@ class PreviewPage extends StatelessWidget {
         ]),
       ),
     );
+  }
+}
+
+Future<void> predicted() async {
+  var client = http.Client();
+  var uri = Uri.parse('http://192.168.254.198:8000/recognition/recog/');
+  var response = await client.get(uri);
+  if (response.statusCode == 200) {
+    var json = response.body;
+    print("Success");
+    print(response.body);
   }
 }
