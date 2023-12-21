@@ -18,7 +18,8 @@ class PreviewPage extends StatelessWidget {
 
   Future<String> predictEfficientNetDogBreed(File imageFile) async {
     // var client = http.Client();
-    final uri = Uri.parse('http://192.168.254.198:8000/recognition/predict/');
+    final uri =
+        Uri.parse('http://10.10.11.186:8000/recognition/predict_from_both/');
 
     // Create a multipart request
     var request = http.MultipartRequest('POST', uri)
@@ -69,7 +70,8 @@ class PreviewPage extends StatelessWidget {
 
 Future<void> predicted() async {
   var client = http.Client();
-  var uri = Uri.parse('http://192.168.254.198:8000/recognition/recog/');
+  var uri =
+      Uri.parse('http://10.10.11.186:8000/recognition/predict_from_both/');
   var response = await client.get(uri);
   if (response.statusCode == 200) {
     var json = response.body;

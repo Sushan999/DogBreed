@@ -2,21 +2,23 @@ import 'package:camera/camera.dart';
 import 'package:dogbreed/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:google_fonts/google_fonts.dart';
+// import 'package:google_fonts/google_fonts.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icons.dart';
 
 import 'breeds_ui.dart';
 import 'camera_page.dart';
-import '../Practice/documents.dart';
+// import '../Practice/documents.dart';
 
 class Home extends StatefulWidget {
+  const Home({super.key});
+
   @override
+  // ignore: library_private_types_in_public_api
   _HomeState createState() => _HomeState();
 }
 
 class _HomeState extends State<Home> {
-
   List<String> imageList = [
     'assets/images/1.jpg',
     'assets/images/2.jpg',
@@ -37,7 +39,7 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
     // Set the system overlay style to match the app's UI color
-    SystemChrome.setSystemUIOverlayStyle(SystemUiOverlayStyle(
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
       statusBarColor: Colors.white,
       systemNavigationBarColor: Colors.black,
     ));
@@ -47,10 +49,10 @@ class _HomeState extends State<Home> {
         backgroundColor: Colors.white,
         elevation: 0,
         automaticallyImplyLeading: false,
-        toolbarHeight: 90.0,  // Set the desired height of the AppBar
-        title: Column(
+        toolbarHeight: 90.0, // Set the desired height of the AppBar
+        title: const Column(
           children: [
-            SizedBox(height: 15.0),  // Use SizedBox to add space above the title
+            SizedBox(height: 15.0), // Use SizedBox to add space above the title
             Text(
               'Home',
               style: TextStyle(
@@ -64,7 +66,7 @@ class _HomeState extends State<Home> {
         actions: [
           IconButton(
             iconSize: 40,
-            icon: Icon(
+            icon: const Icon(
               Icons.search,
               color: Colors.black,
             ),
@@ -88,7 +90,8 @@ class _HomeState extends State<Home> {
                       cameras = await availableCameras();
                       await Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (_) => CameraPage(cameras: cameras!)),
+                        MaterialPageRoute(
+                            builder: (_) => CameraPage(cameras: cameras!)),
                       );
                     },
                     child: Container(
@@ -96,7 +99,8 @@ class _HomeState extends State<Home> {
                       padding: EdgeInsets.all(16.0),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(20.0),
-                        color: Colors.green.withOpacity(0.2), // Set the background color to transparent green
+                        color: Colors.green.withOpacity(
+                            0.2), // Set the background color to transparent green
                       ),
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
@@ -109,7 +113,9 @@ class _HomeState extends State<Home> {
                               color: Colors.green,
                             ),
                           ),
-                          SizedBox(width: 10), // Add some spacing between the text and the icon
+                          SizedBox(
+                              width:
+                                  10), // Add some spacing between the text and the icon
                           Icon(
                             Icons.qr_code_scanner_outlined,
                             size: 24,
@@ -140,7 +146,9 @@ class _HomeState extends State<Home> {
                   child: Text(
                     "View All",
                     style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
                   ),
                 ),
               ),
@@ -182,7 +190,9 @@ class _HomeState extends State<Home> {
                   child: Text(
                     "View All",
                     style: TextStyle(
-                        fontSize: 15, fontWeight: FontWeight.bold, color: Colors.green),
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green),
                   ),
                 ),
               ),
@@ -230,20 +240,22 @@ class _HomeState extends State<Home> {
               gap: 8,
               activeColor: Colors.red,
               iconSize: 24,
-              padding: EdgeInsets.symmetric(horizontal: 20, vertical: 12),
-              duration: Duration(milliseconds: 400),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+              duration: const Duration(milliseconds: 400),
               tabBackgroundColor: Colors.grey[100]!,
               color: Colors.black,
               tabs: [
                 GButton(
                   icon: LineIcons.home,
                   text: 'Home',
-                  textStyle: TextStyle(color: _selectedIndex == 0 ? Colors.red : Colors.black),
+                  textStyle: TextStyle(
+                      color: _selectedIndex == 0 ? Colors.red : Colors.black),
                 ),
                 GButton(
                   icon: LineIcons.paw,
                   text: 'Breeds',
-                  textStyle: TextStyle(color: _selectedIndex == 1 ? Colors.red : Colors.black),
+                  textStyle: TextStyle(
+                      color: _selectedIndex == 1 ? Colors.red : Colors.black),
                   onPressed: () {
                     // Navigate to Breeds screen
                     Navigator.push(
@@ -255,17 +267,18 @@ class _HomeState extends State<Home> {
                 GButton(
                   icon: LineIcons.heart,
                   text: 'Saved',
-                  textStyle: TextStyle(color: _selectedIndex == 2 ? Colors.red : Colors.black),
+                  textStyle: TextStyle(
+                      color: _selectedIndex == 2 ? Colors.red : Colors.black),
                   onPressed: () {
                     // Navigate to Breeds screen
                     predicted();
-
                   },
                 ),
                 GButton(
                   icon: LineIcons.medkit,
                   text: 'Care',
-                  textStyle: TextStyle(color: _selectedIndex == 3 ? Colors.red : Colors.black),
+                  textStyle: TextStyle(
+                      color: _selectedIndex == 3 ? Colors.red : Colors.black),
                 ),
               ],
               selectedIndex: _selectedIndex,
