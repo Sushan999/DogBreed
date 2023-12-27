@@ -19,6 +19,7 @@ class HomeUIState extends State<HomeUI> {
     });
     _pageController.jumpToPage(value);
   }
+
   final PageController _pageController = PageController();
 
   int currentIndex = 0;
@@ -29,8 +30,7 @@ class HomeUIState extends State<HomeUI> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-title: Text('My App'),
-
+        title: Text('My App'),
       ),
       body: Center(
         child: Column(
@@ -41,7 +41,8 @@ title: Text('My App'),
                 cameras = await availableCameras();
                 await Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => CameraPage(cameras: cameras!)),
+                  MaterialPageRoute(
+                      builder: (_) => CameraPage(cameras: cameras!)),
                 );
                 // Add  logic for taking a picture here
               },
@@ -54,7 +55,6 @@ title: Text('My App'),
               },
               child: Text('Pick Images'),
             ),*/
-
           ],
         ),
       ),
@@ -97,13 +97,13 @@ title: Text('My App'),
     );
   }
 
-Future<void> _pickImages() async {
+  Future<void> _pickImages() async {
     // Add your logic for picking images here using image_picker package
     try {
       List<XFile> pickedImages = await ImagePicker().pickMultiImage();
       if (pickedImages != null) {
         List<io.File> imageFiles =
-        pickedImages.map((XFile file) => io.File(file.path)).toList();
+            pickedImages.map((XFile file) => io.File(file.path)).toList();
         setState(() {
           _imageList = imageFiles;
         });
@@ -111,12 +111,12 @@ Future<void> _pickImages() async {
         // Navigate to PreviewPage with the selected image
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => PreviewPage(picture: pickedImages[0])),
+          MaterialPageRoute(
+              builder: (_) => PreviewPage(picture: pickedImages[0])),
         );
       }
     } catch (e) {
       print("Error picking images: $e");
     }
   }
-
 }
