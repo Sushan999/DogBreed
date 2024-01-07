@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:dogbreed/BreedListPage/models.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:http/http.dart' as http;
@@ -24,7 +25,8 @@ class ChatMessage {
 }
 
 class ChatBot extends StatefulWidget {
-  const ChatBot({super.key});
+  const ChatBot({super.key, required this.breed});
+  final Breed breed;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -39,10 +41,15 @@ class _ChatBotState extends State<ChatBot> {
   @override
   void initState() {
     super.initState();
+    delayed();
     _message = [
       (ChatMessage(
           text: "Hello there. How can I assist you today?", isBot: true))
     ];
+  }
+
+  Future<void> delayed() async {
+    await Future.delayed(const Duration(milliseconds: 500));
   }
 
   void passMessage(String message) {
@@ -55,19 +62,32 @@ class _ChatBotState extends State<ChatBot> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-          backgroundColor: const Color.fromARGB(255, 70, 157, 105),
-          title: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              RichText(
-                  text: const TextSpan(
-                      text: "Doggo Chatbot",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                          color: Colors.white)))
-            ],
-          )),
+        backgroundColor: const Color.fromARGB(255, 70, 157, 105),
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            RichText(
+                textAlign: TextAlign.center,
+                text: const TextSpan(
+                    text: "Doggo Chatbot",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        color: Colors.white))),
+            const SizedBox(
+              width: 40,
+            ),
+            Padding(
+              padding: const EdgeInsets.all(0.0),
+              child: ClipOval(
+                child: CircleAvatar(
+                  backgroundImage: NetworkImage(widget.breed.avatar),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
       body: Column(
         children: [
           Expanded(
@@ -81,15 +101,14 @@ class _ChatBotState extends State<ChatBot> {
                   return ListTile(
                     leading: _message[index].isBot
                         ? const CircleAvatar(
-                            backgroundImage: AssetImage("dog_bot.jpg"),
+                            backgroundImage:
+                                // AssetImage('assets/images/dog_bot.jpg')
+                                NetworkImage(
+                                    'https://miro.medium.com/v2/resize:fit:828/format:webp/1*rIkmavUeqyRySwlQdA9kKg.jpeg'),
                           )
+                        //https://static.displate.com/324x454/displate/2023-07-07/36564f7949ef83fec3743ccd3bbcabc2_20665b5530dd3d5737abad41cda98d27.avif
+                        //https://miro.medium.com/v2/resize:fit:828/format:webp/1*rIkmavUeqyRySwlQdA9kKg.jpeg
                         : null,
-                    /*title: !_message[index].isBot
-                      ? null
-                      : const Text(
-                          'Bot',
-                          textAlign: TextAlign.end,
-                        ),*/
                     subtitle: Container(
                         decoration: BoxDecoration(
                             color: _message[index].isBot
@@ -134,7 +153,7 @@ class _ChatBotState extends State<ChatBot> {
                       String message = _textController.text;
                       if (message.isNotEmpty) {
                         _message.add(ChatMessage(text: message, isBot: false));
-                        botMessage(message);
+                        botMessage(message, widget.breed.breed);
                         //passMessage(message);
                         _textController.clear();
                       }
@@ -154,10 +173,10 @@ class _ChatBotState extends State<ChatBot> {
     );
   }
 
-  Future<void> botMessage(String inputstring) async {
+  Future<void> botMessage(String inputstring, String breed) async {
     final response = await http.post(
-        Uri.parse('http://192.168.254.198:8000/chatbot/get_message/'),
-        body: {'input_string': inputstring});
+        Uri.parse('http://10.10.11.138:8000/chatbot/get_message/'),
+        body: {'input_string': inputstring, 'breed': breed});
 
     setState(() {
       _message.add(ChatMessage.fromJson(

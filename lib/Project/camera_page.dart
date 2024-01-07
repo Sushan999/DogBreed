@@ -53,7 +53,8 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> pickImageFromGallery() async {
-    final XFile? imageFile = await ImagePicker().pickImage(source: ImageSource.gallery);
+    final XFile? imageFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
 
     if (imageFile != null) {
       Navigator.push(
@@ -68,7 +69,8 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> initCamera(CameraDescription cameraDescription) async {
-    _cameraController = CameraController(cameraDescription, ResolutionPreset.high);
+    _cameraController =
+        CameraController(cameraDescription, ResolutionPreset.high);
     try {
       await _cameraController.initialize().then((_) {
         if (!mounted) return;
@@ -88,9 +90,9 @@ class _CameraPageState extends State<CameraPage> {
             _cameraController.value.isInitialized
                 ? CameraPreview(_cameraController)
                 : Container(
-              color: Colors.black,
-              child: const Center(child: CircularProgressIndicator()),
-            ),
+                    color: Colors.black,
+                    child: const Center(child: CircularProgressIndicator()),
+                  ),
             Align(
               alignment: Alignment.bottomCenter,
               child: Container(
@@ -113,8 +115,10 @@ class _CameraPageState extends State<CameraPage> {
                         color: Colors.white,
                       ),
                       onPressed: () {
-                        setState(() => _isRearCameraSelected = !_isRearCameraSelected);
-                        initCamera(widget.cameras![_isRearCameraSelected ? 0 : 1]);
+                        setState(() =>
+                            _isRearCameraSelected = !_isRearCameraSelected);
+                        initCamera(
+                            widget.cameras![_isRearCameraSelected ? 0 : 1]);
                       },
                     ),
                     const SizedBox(width: 16), // Add padding between buttons

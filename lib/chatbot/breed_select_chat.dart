@@ -1,17 +1,17 @@
 // ignore_for_file: library_private_types_in_public_api
 import 'package:dogbreed/BreedListPage/models.dart';
-import 'package:dogbreed/breeds_UI.dart';
+import 'package:dogbreed/chatbot/chat_bot_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-class BreedListPage extends StatefulWidget {
-  const BreedListPage({super.key});
+class BreedListPageBot extends StatefulWidget {
+  const BreedListPageBot({super.key});
 
   @override
   _BreedsListPageState createState() => _BreedsListPageState();
 }
 
-class _BreedsListPageState extends State<BreedListPage> {
+class _BreedsListPageState extends State<BreedListPageBot> {
   List<Breed> _breeds = [];
 
   @override
@@ -35,7 +35,7 @@ class _BreedsListPageState extends State<BreedListPage> {
     var breeds = _breeds[index];
 
     return ListTile(
-      onTap: () => _navigateToBreedDetails(breeds, index),
+      onTap: () => _navigateToChatBot(breeds),
       leading: Hero(
         tag: index,
         child: CircleAvatar(
@@ -47,12 +47,12 @@ class _BreedsListPageState extends State<BreedListPage> {
     );
   }
 
-  void _navigateToBreedDetails(Breed friend, Object avatarTag) {
+  void _navigateToChatBot(Breed breed) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (c) {
-          return BreedDetailPage(
-            dogBreed: friend.breed,
+          return ChatBot(
+            breed: breed,
           );
         },
       ),
@@ -76,7 +76,7 @@ class _BreedsListPageState extends State<BreedListPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Identified Breeds'),
+        title: const Text('Select Breed for Chat Preference'),
         backgroundColor: Colors.lightGreen[200],
       ),
       body: content,

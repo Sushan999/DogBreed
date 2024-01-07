@@ -1,19 +1,14 @@
-import 'dart:io';
 import 'package:dogbreed/BreedListPage/breed_list.dart';
-import 'package:dogbreed/chatbot/chat_bot_ui.dart';
-import 'package:google_nav_bar/google_nav_bar.dart';
-
-import 'breeds_UI.dart';
+import 'package:dogbreed/chatbot/breed_select_chat.dart';
 import 'package:dogbreed/Project/camera_page.dart';
 import 'package:dogbreed/Project/home_ui.dart';
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
 import 'package:line_icons/line_icons.dart';
-import 'package:dogbreed/Navigation/main_screen.dart';
-import 'package:dogbreed/result_screen.dart';
 
 // Testing by Tek
-void main() {
+void main() async {
+  await Future.delayed(const Duration(milliseconds: 300));
   runApp(const MyApp());
 }
 
@@ -59,16 +54,10 @@ class _HomeState extends State<MyHome> {
         'page': const Home(),
       },
       {
-        'page': const ChatBot(),
+        'page': const BreedListPageBot(),
       }
     ];
     super.initState();
-  }
-
-  void _selectPage(int index) {
-    setState(() {
-      _selectedPageIndex = index;
-    });
   }
 
   final setColor = const Color.fromARGB(255, 31, 192, 36).withOpacity(1);
@@ -221,14 +210,18 @@ class _HomeState extends State<MyHome> {
             ),
             onPressed: () async {
               cameras = await availableCameras();
-              await Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (_) => CameraPage(cameras: cameras!)),
-              );
+              // ignore: use_build_context_synchronously
+              pushToCamera(context, cameras!);
             },
           ),
         ));
+  }
+
+  void pushToCamera(BuildContext context, List<CameraDescription> cameras) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => CameraPage(cameras: cameras)),
+    );
   }
 }
 

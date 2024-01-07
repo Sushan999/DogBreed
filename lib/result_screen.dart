@@ -1,3 +1,7 @@
+// import 'dart:js';
+
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 // ignore: depend_on_referenced_packages
@@ -5,174 +9,224 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:readmore/readmore.dart';
 import 'dart:io';
 
-class ResultScreen extends StatelessWidget {
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  // ignore: empty_constructor_bodies
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'PupScan',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        useMaterial3: true,
+      ),
+      home: const ResultScreen(),
+    );
+  }
+}
+
+class ResultScreen extends StatefulWidget {
   const ResultScreen({Key? key})
       : super(
           key: key,
         );
 
   @override
+  State<ResultScreen> createState() => _ResultScreenState();
+}
+
+class _ResultScreenState extends State<ResultScreen> {
+  @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+
+    final List<String> imageUrls = [
+      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-running-outdoors.jpg",
+      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinschers-together-in-the-grass.jpg",
+      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-at-the-2016-ANC.jpg",
+    ];
+
+    int currentPage = 0;
+    late PageController pageController =
+        PageController(initialPage: currentPage);
+    late Timer timer;
+
+    @override
+    void initState() {
+      super.initState();
+      // pageController = PageController(initialPage: currentPage);
+
+      // Set up a timer for auto-sliding every 5 seconds
+      timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
+        if (currentPage < imageUrls.length - 1) {
+          currentPage++;
+        } else {
+          currentPage = 0;
+        }
+        pageController.animateToPage(
+          currentPage,
+          duration: const Duration(milliseconds: 500),
+          curve: Curves.easeInOut,
+        );
+      });
+    }
+
+    @override
+    void dispose() {
+      pageController.dispose();
+      timer.cancel();
+      super.dispose();
+    }
+
     return SafeArea(
       child: Scaffold(
-        appBar: _buildAppBar(context),
-        body: Container(
-          width: double.maxFinite,
-          padding: const EdgeInsets.symmetric(vertical: 49),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              const Spacer(),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Container(
-                    height: 8,
-                    width: 8,
-                    decoration: BoxDecoration(
-                      color: Colors.green[300],
-                      borderRadius: BorderRadius.circular(
-                        4,
-                      ),
-                    ),
+        // appBar: AppBar(
+        //   title: const Text('Predicted Breed'),
+        //   backgroundColor: Colors.lightGreen[200],
+        // ),
+        body: SingleChildScrollView(
+          child: Container(
+            width: size.width,
+            height: size.height,
+            padding: const EdgeInsets.symmetric(vertical: 50),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                SizedBox(
+                  width: size.width,
+                  height: 180,
+                  child: PageView.builder(
+                    controller: pageController,
+                    itemCount: imageUrls.length,
+                    onPageChanged: (index) {
+                      setState(() {
+                        currentPage = index;
+                      });
+                    },
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                        imageUrls[index],
+                        fit: BoxFit.fitHeight,
+                      );
+                    },
                   ),
-                  Container(
-                    height: 8,
-                    width: 8,
-                    margin: const EdgeInsets.only(left: 11),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: BorderRadius.circular(
-                        4,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 8,
-                    width: 8,
-                    margin: const EdgeInsets.only(left: 12),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: BorderRadius.circular(
-                        4,
-                      ),
-                    ),
-                  ),
-                  Container(
-                    height: 8,
-                    width: 8,
-                    margin: const EdgeInsets.only(left: 10),
-                    decoration: BoxDecoration(
-                      color: Colors.blueGrey[100],
-                      borderRadius: BorderRadius.circular(
-                        4,
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 8),
-              Card(
-                clipBehavior: Clip.antiAlias,
-                elevation: 0,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadiusStyle.roundedBorder10,
                 ),
-                child: Container(
-                  height: 440,
-                  width: double.maxFinite,
-                  decoration: BoxDecoration(
+                const SizedBox(height: 8),
+                Card(
+                  clipBehavior: Clip.antiAlias,
+                  elevation: 0,
+                  shape: RoundedRectangleBorder(
                     borderRadius: BorderRadiusStyle.roundedBorder10,
                   ),
-                  child: Stack(
-                    alignment: Alignment.bottomLeft,
-                    children: [
-                      _buildDogDetails(context),
-                      Align(
+                  child: Container(
+                    height: 550,
+                    width: double.maxFinite,
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadiusStyle.roundedBorder10,
+                    ),
+                    child: SingleChildScrollView(
+                      child: Stack(
                         alignment: Alignment.bottomLeft,
-                        child: Container(
-                          margin: const EdgeInsets.only(
-                            left: 30,
-                            top: 383,
-                            right: 200,
+                        children: [
+                          _buildDogDetails(context),
+                          const SizedBox(
+                            height: 4,
                           ),
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 4,
-                            vertical: 2,
-                          ),
-                          decoration: AppDecoration.fillPrimary.copyWith(
-                            borderRadius: BorderRadiusStyle.roundedBorder10,
-                          ),
-                          child: Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              CustomImageView(
-                                imagePath: ImageConstant.imgIconoirBirthdayCake,
-                                height: 32.adaptSize,
-                                width: 32.adaptSize,
-                                margin: EdgeInsets.only(
-                                  top: 2.v,
-                                  bottom: 17.v,
-                                ),
+                          Align(
+                            alignment: Alignment.bottomLeft,
+                            child: Container(
+                              margin: const EdgeInsets.only(
+                                left: 35,
+                                top: 350,
+                                right: 185,
                               ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 20.h,
-                                  top: 1.v,
-                                ),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Life Expectancy",
-                                      style: CustomTextStyles.titleSmall14,
-                                    ),
-                                    SizedBox(height: 2.v),
-                                    Text(
-                                      "12 to 14 years",
-                                      style: theme.textTheme.titleSmall,
-                                    ),
-                                  ],
-                                ),
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 7,
+                                vertical: 0,
                               ),
-                            ],
+                              decoration: BoxDecoration(
+                                color: Colors.green.withOpacity(0.2),
+                              ).copyWith(
+                                borderRadius: BorderRadiusStyle.roundedBorder10,
+                              ),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  CustomImageView(
+                                    imagePath:
+                                        ImageConstant.imgIconoirBirthdayCake,
+                                    height: 30,
+                                    width: 32,
+                                    margin: const EdgeInsets.only(
+                                      top: 2,
+                                      bottom: 17,
+                                    ),
+                                  ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      left: 1,
+                                      top: 1,
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        Text(
+                                          "Life Expectancy",
+                                          style: TextStyle(
+                                            color: Colors.lightGreen[800],
+                                            fontSize: 15,
+                                            fontFamily: 'Catamaran',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                        Text(
+                                          "12 to 14 years",
+                                          style: TextStyle(
+                                            color: Colors.lightGreen[800],
+                                            fontSize: 15,
+                                            fontFamily: 'Catamaran',
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                      ),
-                      CustomElevatedButton(
-                        width: 167.h,
-                        text: "Dog Health",
-                        margin: EdgeInsets.only(right: 24.h),
-                        leftIcon: Container(
-                          margin: EdgeInsets.only(right: 23.h),
-                          child: CustomImageView(
-                            imagePath: ImageConstant.imgSolarhealthlineduotone,
-                            height: 32.adaptSize,
-                            width: 32.adaptSize,
+                          CustomElevatedButton(
+                            height: 50,
+                            width: 167,
+                            text: "Learn More",
+                            margin: const EdgeInsets.only(right: 15),
+                            leftIcon: Container(
+                              margin: const EdgeInsets.only(right: 15),
+                              // child: CustomImageView(
+                              //   // imagePath:
+                              //   //     ImageConstant.imgSolarhealthlineduotone,
+                              //   height: 32.adaptSize,
+                              //   width: 32.adaptSize,
+                              // ),
+                            ),
+                            buttonStyle: const ButtonStyle(),
+                            alignment: Alignment.bottomRight,
                           ),
-                        ),
-                        buttonStyle: const ButtonStyle(),
-                        alignment: Alignment.bottomRight,
+                        ],
                       ),
-                    ],
+                    ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
-    );
-  }
-
-  /// Section Widget
-  PreferredSizeWidget _buildAppBar(BuildContext context) {
-    return CustomAppBar(
-      actions: [
-        AppbarTrailingIconbutton(
-          imagePath: ImageConstant.imgGroup10,
-          margin: EdgeInsets.symmetric(horizontal: 13.h),
-        ),
-      ],
     );
   }
 
@@ -181,46 +235,46 @@ class ResultScreen extends StatelessWidget {
     return Align(
       alignment: Alignment.topCenter,
       child: Container(
-        padding: EdgeInsets.symmetric(
-          horizontal: 15.h,
-          vertical: 6.v,
+        padding: const EdgeInsets.symmetric(
+          horizontal: 15,
+          vertical: 30,
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             SizedBox(
-              height: 94.v,
-              width: 321.h,
+              height: 60,
+              width: 320,
               child: Stack(
                 alignment: Alignment.center,
                 children: [
                   Align(
                     alignment: Alignment.topLeft,
                     child: Container(
-                      height: 19.v,
-                      width: 23.h,
-                      margin: EdgeInsets.only(top: 5.v),
+                      height: 19,
+                      width: 23,
+                      margin: const EdgeInsets.only(top: 4),
                       child: Stack(
                         alignment: Alignment.center,
                         children: [
                           Align(
                             alignment: Alignment.center,
                             child: Container(
-                              height: 19.v,
-                              width: 23.h,
+                              height: 19,
+                              width: 23,
                               decoration: BoxDecoration(
-                                color: theme.colorScheme.primary,
+                                // color: theme.colorScheme.primary,
                                 borderRadius: BorderRadius.circular(
-                                  11.h,
+                                  11,
                                 ),
                               ),
                             ),
                           ),
                           CustomImageView(
                             imagePath: ImageConstant.imgTeenyiconsTickOutline,
-                            height: 15.adaptSize,
-                            width: 15.adaptSize,
+                            height: 15,
+                            width: 15,
                             alignment: Alignment.center,
                           ),
                         ],
@@ -230,87 +284,50 @@ class ResultScreen extends StatelessWidget {
                   Align(
                     alignment: Alignment.center,
                     child: SizedBox(
-                      height: 94.v,
-                      width: 309.h,
+                      height: 94,
+                      width: 309,
                       child: Stack(
                         alignment: Alignment.bottomLeft,
                         children: [
-                          Align(
-                            alignment: Alignment.topRight,
-                            child: Text(
-                              "With 99.74 % accuracy, the doggo is a",
-                              style: CustomTextStyles.titleMediumLightgreen700,
-                            ),
-                          ),
-                          Align(
+                          const Align(
                             alignment: Alignment.bottomLeft,
                             child: Padding(
                               padding: EdgeInsets.only(
-                                left: 4.h,
-                                bottom: 19.v,
+                                left: 4,
+                                bottom: 19,
                               ),
                               child: Text(
                                 "Siberian Husky",
-                                style: theme.textTheme.headlineMedium,
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 29,
+                                  fontFamily: 'Catamaran',
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
                             ),
-                          ),
-                          CustomImageView(
-                            imagePath: ImageConstant.imgMaterialSymbol,
-                            height: 38.adaptSize,
-                            width: 38.adaptSize,
-                            alignment: Alignment.centerRight,
-                            margin: EdgeInsets.only(right: 80.h),
                           ),
                           Align(
                             alignment: Alignment.bottomLeft,
                             child: Row(
                               children: [
                                 Container(
-                                  width: 82.h,
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 9.h,
-                                    vertical: 1.v,
+                                  width: 150,
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 1,
                                   ),
-                                  decoration:
-                                      AppDecoration.fillBlueGray.copyWith(
+                                  decoration: BoxDecoration(
+                                          color: Color.fromARGB(
+                                              255, 201, 200, 200))
+                                      .copyWith(
                                     borderRadius:
                                         BorderRadiusStyle.roundedBorder10,
                                   ),
                                   child: Text(
                                     "Working Dog",
-                                    style: CustomTextStyles.bodySmallBlack900,
-                                  ),
-                                ),
-                                Container(
-                                  height: 23.v,
-                                  width: 87.h,
-                                  margin: EdgeInsets.only(left: 16.h),
-                                  child: Stack(
-                                    alignment: Alignment.bottomCenter,
-                                    children: [
-                                      Align(
-                                        alignment: Alignment.center,
-                                        child: Container(
-                                          height: 23.v,
-                                          width: 87.h,
-                                          decoration: BoxDecoration(
-                                            color: appTheme.blueGray100,
-                                            borderRadius: BorderRadius.circular(
-                                              10.h,
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                      Align(
-                                        alignment: Alignment.bottomCenter,
-                                        child: Text(
-                                          "Purebred Dog",
-                                          style: CustomTextStyles
-                                              .bodySmallBlack900,
-                                        ),
-                                      ),
-                                    ],
+                                    style: TextStyle(color: Colors.black),
+                                    // style: CustomTextStyles.bodySmallBlack900,
                                   ),
                                 ),
                               ],
@@ -323,49 +340,63 @@ class ResultScreen extends StatelessWidget {
                 ],
               ),
             ),
-            SizedBox(height: 12.v),
-            Padding(
-              padding: EdgeInsets.only(left: 15.h),
+            const SizedBox(height: 12),
+            const Padding(
+              padding: EdgeInsets.only(left: 15),
               child: Text(
                 "Breed Traits and Characteristics",
-                style: theme.textTheme.titleLarge,
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: 20,
+                  fontFamily: 'Catamaran',
+                  fontWeight: FontWeight.w600,
+                ),
               ),
             ),
-            SizedBox(height: 2.v),
+            SizedBox(height: 2),
             Align(
               alignment: Alignment.center,
               child: SizedBox(
-                width: 324.h,
+                width: 324,
                 child: ReadMoreText(
-                  "Siberian Husky, a thickly coated, compact sled dog of medium size and great endurance, was developed to work in packs, pulling light loads at moderate speeds over vast frozen expanses. Huskies are friendly, fastidious, and dignified. The graceful, medium-sized Siberian Husky's almond-shaped eyes can be either brown or blue'¿and sometimes one of ea ...",
-                  trimLines: 7,
-                  colorClickableText: appTheme.black900,
+                  "Generally considered dogkind's finest all-purpose worker, the German Shepherd Dog is a large, agile, muscular dog of noble character and high intelligence. Loyal, confident, courageous, and steady, the German Shepherd is truly a dog lover's delight. German Shepherd Dogs can stand as high as 26 inches at the shoulder and, when viewed in outline, presents a picture of smooth, graceful curves rather than angles. The natural gait is a free-and-easy trot, but they can turn it up a notch or two and reach great speeds. There are many reasons why German Shepherds stand in the front rank of canine royalty, but experts say their defining attribute is character: loyalty, courage, confidence, the ability to learn commands for many tasks, and the willingness to put their life on the line in defense of loved ones. German Shepherds will be gentle family pets and steadfast guardians, but, the breed standard says, there's a 'certain aloofness that does not lend itself to immediate and indiscriminate friendships.'",
+                  trimLines: 12,
+                  colorClickableText: Colors.black,
                   trimMode: TrimMode.Line,
                   trimCollapsedText: "Read more",
-                  moreStyle: CustomTextStyles.titleSmallBlack900.copyWith(
-                    height: 1.40,
+                  moreStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontFamily: 'Catamaran',
+                    fontWeight: FontWeight.w500,
                   ),
-                  lessStyle: CustomTextStyles.titleSmallBlack900.copyWith(
+                  lessStyle: TextStyle(
+                    color: Colors.black,
+                    fontSize: 15,
+                    fontFamily: 'Catamaran',
+                    fontWeight: FontWeight.w500,
                     height: 1.40,
                   ),
                 ),
               ),
             ),
-            SizedBox(height: 9.v),
+            SizedBox(height: 9),
             Align(
               alignment: Alignment.center,
               child: Padding(
                 padding: EdgeInsets.only(
-                  left: 13.h,
-                  right: 5.h,
+                  left: 13,
+                  right: 5,
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Container(
-                      width: 162.h,
-                      padding: EdgeInsets.symmetric(vertical: 4.v),
-                      decoration: AppDecoration.fillPrimary.copyWith(
+                      width: 173,
+                      padding: const EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.2),
+                      ).copyWith(
                         borderRadius: BorderRadiusStyle.roundedBorder10,
                       ),
                       child: Row(
@@ -374,28 +405,38 @@ class ResultScreen extends StatelessWidget {
                         children: [
                           CustomImageView(
                             imagePath: ImageConstant.imgIconParkOutli,
-                            height: 31.adaptSize,
-                            width: 31.adaptSize,
-                            margin: EdgeInsets.only(
-                              top: 6.v,
-                              bottom: 15.v,
+                            height: 31,
+                            width: 31,
+                            margin: const EdgeInsets.only(
+                              top: 6,
+                              bottom: 15,
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 2.v),
+                            padding: EdgeInsets.only(bottom: 2),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(left: 20.h),
+                                  padding: EdgeInsets.only(left: 1),
                                   child: Text(
                                     "Height :",
-                                    style: theme.textTheme.titleSmall,
+                                    style: TextStyle(
+                                      color: Colors.lightGreen[800],
+                                      fontSize: 15,
+                                      fontFamily: 'Catamaran',
+                                      fontWeight: FontWeight.w500,
+                                    ),
                                   ),
                                 ),
                                 Text(
                                   "20 to 23.5 inches",
-                                  style: theme.textTheme.titleSmall,
+                                  style: TextStyle(
+                                    color: Colors.lightGreen[800],
+                                    fontSize: 15,
+                                    fontFamily: 'Catamaran',
+                                    fontWeight: FontWeight.w500,
+                                  ),
                                 ),
                               ],
                             ),
@@ -404,10 +445,12 @@ class ResultScreen extends StatelessWidget {
                       ),
                     ),
                     Container(
-                      width: 171.h,
-                      margin: EdgeInsets.only(left: 9.h),
-                      padding: EdgeInsets.symmetric(vertical: 4.v),
-                      decoration: AppDecoration.fillPrimary.copyWith(
+                      width: 150,
+                      margin: EdgeInsets.all(4),
+                      padding: EdgeInsets.symmetric(vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.green.withOpacity(0.2),
+                      ).copyWith(
                         borderRadius: BorderRadiusStyle.roundedBorder10,
                       ),
                       child: Row(
@@ -417,31 +460,42 @@ class ResultScreen extends StatelessWidget {
                           CustomImageView(
                             imagePath:
                                 ImageConstant.imgHealthiconsWeightOutline,
-                            height: 32.adaptSize,
-                            width: 32.adaptSize,
+                            height: 32,
+                            width: 32,
                             margin: EdgeInsets.only(
-                              top: 4.v,
-                              bottom: 16.v,
+                              top: 4,
+                              bottom: 16,
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 1.v),
+                            padding: EdgeInsets.only(bottom: 1),
                             child: Column(
                               children: [
                                 Align(
-                                  alignment: Alignment.centerRight,
+                                  alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.only(right: 20.h),
+                                    padding: EdgeInsets.only(right: 50),
                                     child: Text(
                                       "Weight :",
-                                      style: theme.textTheme.titleSmall,
+                                      style: TextStyle(
+                                        color: Colors.lightGreen[800],
+                                        fontSize: 15,
+                                        fontFamily: 'Catamaran',
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                      textAlign: TextAlign.left,
                                     ),
                                   ),
                                 ),
                                 Text(
                                   "35 to 60 pounds",
-                                  style: theme.textTheme.titleSmall,
-                                ),
+                                  style: TextStyle(
+                                    color: Colors.lightGreen[800],
+                                    fontSize: 15,
+                                    fontFamily: 'Catamaran',
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                )
                               ],
                             ),
                           ),
@@ -452,7 +506,7 @@ class ResultScreen extends StatelessWidget {
                 ),
               ),
             ),
-            SizedBox(height: 19.v),
+            SizedBox(height: 19),
           ],
         ),
       ),
@@ -463,9 +517,9 @@ class ResultScreen extends StatelessWidget {
 class CustomButtonStyles {
   // Filled button style
   static ButtonStyle get fillPurpleCc => ElevatedButton.styleFrom(
-        backgroundColor: appTheme.purple100Cc,
+        backgroundColor: Colors.purple[100],
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(10.h),
+          borderRadius: BorderRadius.circular(10),
         ),
       );
   // text button style
@@ -505,7 +559,8 @@ class CustomImageView extends StatelessWidget {
     this.radius,
     this.margin,
     this.border,
-    this.placeHolder = 'assets/images/image_not_found.png',
+    this.placeHolder =
+        'https://static.displate.com/324x454/displate/2023-07-07/36564f7949ef83fec3743ccd3bbcabc2_20665b5530dd3d5737abad41cda98d27.avif',
   });
 
   @override
@@ -639,67 +694,11 @@ class BorderRadiusStyle {
       );
 }
 
-class AppDecoration {
-  // Fill decorations
-  static BoxDecoration get fillBlueGray => BoxDecoration(
-        color: appTheme.blueGray100,
-      );
-  static BoxDecoration get fillOnPrimaryContainer => BoxDecoration(
-        color: theme.colorScheme.onPrimaryContainer.withOpacity(1),
-      );
-  static BoxDecoration get fillPrimary => BoxDecoration(
-        color: theme.colorScheme.primary,
-      );
-}
-
 class ImageConstant {
   // Image folder path
   static String imagePath = 'assets/images';
 
   // Homepage - Container images
-  static String imgSearch = '$imagePath/img_search.png';
-
-  static String imgPawprint = '$imagePath/img_pawprint.png';
-
-  static String imgImage = '$imagePath/img_image.png';
-
-  static String imgImage167x138 = '$imagePath/img_image_167x138.png';
-
-  static String imgRectangle561 = '$imagePath/img_rectangle_561.png';
-
-  static String imgForward = '$imagePath/img_forward.png';
-
-  static String imgRectangle562 = '$imagePath/img_rectangle_562.png';
-
-  static String imgRectangle564 = '$imagePath/img_rectangle_564.png';
-
-  static String imgNavHome = '$imagePath/img_nav_home.png';
-
-  static String imgNavBreedsGray600 = '$imagePath/img_nav_breeds_gray_600.svg';
-
-  static String imgNavCamera = '$imagePath/img_nav_camera.svg';
-
-  static String imgNavSaved = '$imagePath/img_nav_saved.png';
-
-  static String imgNavCare = '$imagePath/img_nav_care.svg';
-
-  // Breeds Page images
-  static String imgSearchLightGreen700 =
-      '$imagePath/img_search_light_green_700.svg';
-
-  static String imgRectangle567 = '$imagePath/img_rectangle_567.png';
-
-  static String imgRectangle568 = '$imagePath/img_rectangle_568.png';
-
-  static String imgRectangle569 = '$imagePath/img_rectangle_569.png';
-
-  static String imgRectangle570 = '$imagePath/img_rectangle_570.png';
-
-  static String imgRectangle571 = '$imagePath/img_rectangle_571.png';
-
-  static String imgRectangle572 = '$imagePath/img_rectangle_572.png';
-
-  static String imgRectangle573 = '$imagePath/img_rectangle_573.png';
 
   // Result images
   static String imgGroup10 = '$imagePath/img_group_10.svg';
@@ -721,390 +720,6 @@ class ImageConstant {
       '$imagePath/img_solarhealthlineduotone.svg';
 
   static String imageNotFound = 'assets/images/image_not_found.png';
-}
-
-const num FIGMA_DESIGN_WIDTH = 390;
-const num FIGMA_DESIGN_HEIGHT = 844;
-const num FIGMA_DESIGN_STATUS_BAR = 0;
-typedef ResponsiveBuild = Widget Function(
-  BuildContext context,
-  Orientation orientation,
-  DeviceType deviceType,
-);
-
-class Sizer extends StatelessWidget {
-  const Sizer({
-    Key? key,
-    required this.builder,
-  }) : super(key: key);
-
-  /// Builds the widget whenever the orientation changes.
-  final ResponsiveBuild builder;
-
-  @override
-  Widget build(BuildContext context) {
-    return LayoutBuilder(builder: (context, constraints) {
-      return OrientationBuilder(builder: (context, orientation) {
-        SizeUtils.setScreenSize(constraints, orientation);
-        return builder(context, orientation, SizeUtils.deviceType);
-      });
-    });
-  }
-}
-
-class SizeUtils {
-  /// Device's BoxConstraints
-  static late BoxConstraints boxConstraints;
-
-  /// Device's Orientation
-  static late Orientation orientation;
-
-  /// Type of Device
-  ///
-  /// This can either be mobile or tablet
-  static late DeviceType deviceType;
-
-  /// Device's Height
-  static late double height = 844;
-
-  /// Device's Width
-  static late double width = 390;
-
-  static void setScreenSize(
-    BoxConstraints constraints,
-    Orientation currentOrientation,
-  ) {
-    // Sets boxConstraints and orientation
-    boxConstraints = constraints;
-    orientation = currentOrientation;
-
-    // Sets screen width and height
-    if (orientation == Orientation.portrait) {
-      width =
-          boxConstraints.maxWidth.isNonZero(defaultValue: FIGMA_DESIGN_WIDTH);
-      height = boxConstraints.maxHeight.isNonZero();
-    } else {
-      width =
-          boxConstraints.maxHeight.isNonZero(defaultValue: FIGMA_DESIGN_WIDTH);
-      height = boxConstraints.maxWidth.isNonZero();
-    }
-    deviceType = DeviceType.mobile;
-  }
-}
-
-/// This extension is used to set padding/margin (for the top and bottom side) &
-/// height of the screen or widget according to the Viewport height.
-extension ResponsiveExtension on num {
-  /// This method is used to get device viewport width.
-  double get _width => SizeUtils.width;
-
-  /// This method is used to get device viewport height.
-  double get _height => SizeUtils.height;
-
-  /// This method is used to set padding/margin (for the left and Right side) &
-  /// width of the screen or widget according to the Viewport width.
-  double get h => ((this * _width) / FIGMA_DESIGN_WIDTH);
-
-  /// This method is used to set padding/margin (for the top and bottom side) &
-  /// height of the screen or widget according to the Viewport height.
-  double get v =>
-      (this * _height) / (FIGMA_DESIGN_HEIGHT - FIGMA_DESIGN_STATUS_BAR);
-
-  /// This method is used to set smallest px in image height and width
-  double get adaptSize {
-    var height = v;
-    var width = h;
-    return height < width ? height.toDoubleValue() : width.toDoubleValue();
-  }
-
-  /// This method is used to set text font size according to Viewport
-  double get fSize => adaptSize;
-}
-
-extension FormatExtension on double {
-  /// Return a [double] value with formatted according to provided fractionDigits
-  double toDoubleValue({int fractionDigits = 2}) {
-    return double.parse(this.toStringAsFixed(fractionDigits));
-  }
-
-  double isNonZero({num defaultValue = 0.0}) {
-    return this > 0 ? this : defaultValue.toDouble();
-  }
-}
-
-enum DeviceType { mobile, tablet, desktop }
-
-String _appTheme = "primary";
-
-/// Helper class for managing themes and colors.
-class ThemeHelper {
-  // A map of custom color themes supported by the app
-  Map<String, PrimaryColors> _supportedCustomColor = {
-    'primary': PrimaryColors()
-  };
-
-// A map of color schemes supported by the app
-  Map<String, ColorScheme> _supportedColorScheme = {
-    'primary': ColorSchemes.primaryColorScheme
-  };
-
-  /// Changes the app theme to [_newTheme].
-  void changeTheme(String _newTheme) {
-    _appTheme = _newTheme;
-  }
-
-  /// Returns the primary colors for the current theme.
-  PrimaryColors _getThemeColors() {
-    //throw exception to notify given theme is not found or not generated by the generator
-    if (!_supportedCustomColor.containsKey(_appTheme)) {
-      throw Exception(
-          "$_appTheme is not found.Make sure you have added this theme class in JSON Try running flutter pub run build_runner");
-    }
-    //return theme from map
-
-    return _supportedCustomColor[_appTheme] ?? PrimaryColors();
-  }
-
-  /// Returns the current theme data.
-  ThemeData _getThemeData() {
-    //throw exception to notify given theme is not found or not generated by the generator
-    if (!_supportedColorScheme.containsKey(_appTheme)) {
-      throw Exception(
-          "$_appTheme is not found.Make sure you have added this theme class in JSON Try running flutter pub run build_runner");
-    }
-    //return theme from map
-
-    var colorScheme =
-        _supportedColorScheme[_appTheme] ?? ColorSchemes.primaryColorScheme;
-    return ThemeData(
-      visualDensity: VisualDensity.standard,
-      colorScheme: colorScheme,
-      textTheme: TextThemes.textTheme(colorScheme),
-      scaffoldBackgroundColor: colorScheme.onPrimaryContainer.withOpacity(1),
-      elevatedButtonTheme: ElevatedButtonThemeData(
-        style: ElevatedButton.styleFrom(
-          backgroundColor: colorScheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8.h),
-          ),
-          visualDensity: const VisualDensity(
-            vertical: -4,
-            horizontal: -4,
-          ),
-          padding: EdgeInsets.zero,
-        ),
-      ),
-      dividerTheme: DividerThemeData(
-        thickness: 1,
-        space: 1,
-        color: appTheme.blueGray100.withOpacity(0.8),
-      ),
-    );
-  }
-
-  /// Returns the primary colors for the current theme.
-  PrimaryColors themeColor() => _getThemeColors();
-
-  /// Returns the current theme data.
-  ThemeData themeData() => _getThemeData();
-}
-
-/// Class containing the supported text theme styles.
-class TextThemes {
-  static TextTheme textTheme(ColorScheme colorScheme) => TextTheme(
-        bodySmall: TextStyle(
-          color: appTheme.lightGreen800,
-          fontSize: 12.fSize,
-          fontFamily: 'Catamaran',
-          fontWeight: FontWeight.w300,
-        ),
-        headlineLarge: TextStyle(
-          color: appTheme.black900,
-          fontSize: 32.fSize,
-          fontFamily: 'Livvic',
-          fontWeight: FontWeight.w900,
-        ),
-        headlineMedium: TextStyle(
-          color: appTheme.black900,
-          fontSize: 29.fSize,
-          fontFamily: 'Catamaran',
-          fontWeight: FontWeight.w700,
-        ),
-        labelLarge: TextStyle(
-          color: appTheme.blueGray400,
-          fontSize: 12.fSize,
-          fontFamily: 'DM Sans',
-          fontWeight: FontWeight.w500,
-        ),
-        titleLarge: TextStyle(
-          color: appTheme.black900,
-          fontSize: 20.fSize,
-          fontFamily: 'Catamaran',
-          fontWeight: FontWeight.w600,
-        ),
-        titleMedium: TextStyle(
-          color: appTheme.black900,
-          fontSize: 18.fSize,
-          fontFamily: 'Catamaran',
-          fontWeight: FontWeight.w600,
-        ),
-        titleSmall: TextStyle(
-          color: appTheme.lightGreen800,
-          fontSize: 15.fSize,
-          fontFamily: 'Catamaran',
-          fontWeight: FontWeight.w500,
-        ),
-      );
-}
-
-/// Class containing the supported color schemes.
-class ColorSchemes {
-  static final primaryColorScheme = ColorScheme.light(
-    // Primary colors
-    primary: Color(0XFFEEF7E8),
-
-    // On colors(text colors)
-    onPrimary: Color(0XFF9747FF),
-    onPrimaryContainer: Color(0XCEFFFFFF),
-  );
-}
-
-/// Class containing custom colors for a primary theme.
-class PrimaryColors {
-  // Black
-  Color get black900 => Color(0XFF000000);
-
-  // BlueGray
-  Color get blueGray100 => Color(0XFFD9D9D9);
-  Color get blueGray400 => Color(0XFF8B8B8B);
-
-  // DeepPurple
-  Color get deepPurpleA200 => Color(0XFF964FF3);
-
-  // Gray
-  Color get gray200 => Color(0XFFE9E9E9);
-  Color get gray50 => Color(0XFFF8F8F8);
-  Color get gray600 => Color(0XFF777777);
-
-  // LightGreen
-  Color get lightGreen700 => Color(0XFF61AF2B);
-  Color get lightGreen800 => Color(0XFF50981D);
-
-  // PurpleCc
-  Color get purple100Cc => Color(0XCCF6C6FB);
-}
-
-PrimaryColors get appTheme => ThemeHelper().themeColor();
-ThemeData get theme => ThemeHelper().themeData();
-
-class CustomTextStyles {
-  // Body text style
-  static get bodySmallBlack900 => theme.textTheme.bodySmall!.copyWith(
-        color: appTheme.black900,
-        fontWeight: FontWeight.w400,
-      );
-  static get bodySmallBlack900ExtraLight => theme.textTheme.bodySmall!.copyWith(
-        color: appTheme.black900,
-        fontSize: 11.fSize,
-        fontWeight: FontWeight.w200,
-      );
-  // Label text style
-  static get labelLargeCatamaranBlack900 =>
-      theme.textTheme.labelLarge!.catamaran.copyWith(
-        color: appTheme.black900.withOpacity(0.87),
-        fontSize: 13.fSize,
-        fontWeight: FontWeight.w600,
-      );
-  static get labelLargeCatamaranBlack90013 =>
-      theme.textTheme.labelLarge!.catamaran.copyWith(
-        color: appTheme.black900,
-        fontSize: 13.fSize,
-      );
-  static get labelLargeCatamaranBlack900SemiBold =>
-      theme.textTheme.labelLarge!.catamaran.copyWith(
-        color: appTheme.black900,
-        fontSize: 13.fSize,
-        fontWeight: FontWeight.w600,
-      );
-  static get labelLargeCatamaranLightgreen700 =>
-      theme.textTheme.labelLarge!.catamaran.copyWith(
-        color: appTheme.lightGreen700,
-        fontSize: 13.fSize,
-        fontWeight: FontWeight.w600,
-      );
-  static get labelLargeCatamaranLightgreen700_1 =>
-      theme.textTheme.labelLarge!.catamaran.copyWith(
-        color: appTheme.lightGreen700,
-      );
-  static get labelLargeLightgreen700 => theme.textTheme.labelLarge!.copyWith(
-        color: appTheme.lightGreen700.withOpacity(0.7),
-      );
-  static get labelLargeLightgreen700_1 => theme.textTheme.labelLarge!.copyWith(
-        color: appTheme.lightGreen700.withOpacity(0.78),
-      );
-  // Title text style
-  static get titleLargeBlack900 => theme.textTheme.titleLarge!.copyWith(
-        color: appTheme.black900.withOpacity(0.89),
-      );
-  static get titleMedium19 => theme.textTheme.titleMedium!.copyWith(
-        fontSize: 19.fSize,
-      );
-  static get titleMediumBlack900 => theme.textTheme.titleMedium!.copyWith(
-        color: appTheme.black900.withOpacity(0.96),
-        fontSize: 19.fSize,
-      );
-  static get titleMediumLightgreen700 => theme.textTheme.titleMedium!.copyWith(
-        color: appTheme.lightGreen700.withOpacity(0.8),
-      );
-  static get titleMedium_1 => theme.textTheme.titleMedium!;
-  static get titleSmall14 => theme.textTheme.titleSmall!.copyWith(
-        fontSize: 14.fSize,
-      );
-  static get titleSmallBlack900 => theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.black900,
-      );
-  static get titleSmallBlack900SemiBold => theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.black900,
-        fontSize: 14.fSize,
-        fontWeight: FontWeight.w600,
-      );
-  static get titleSmallDeeppurpleA200 => theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.deepPurpleA200,
-      );
-  static get titleSmallLightgreen700 => theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.lightGreen700,
-        fontWeight: FontWeight.w700,
-      );
-  static get titleSmallLightgreen700Bold =>
-      theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.lightGreen700,
-        fontWeight: FontWeight.w700,
-      );
-  static get titleSmallLightgreen700SemiBold =>
-      theme.textTheme.titleSmall!.copyWith(
-        color: appTheme.lightGreen700,
-        fontWeight: FontWeight.w600,
-      );
-}
-
-extension on TextStyle {
-  TextStyle get dMSans {
-    return copyWith(
-      fontFamily: 'DM Sans',
-    );
-  }
-
-  TextStyle get livvic {
-    return copyWith(
-      fontFamily: 'Livvic',
-    );
-  }
-
-  TextStyle get catamaran {
-    return copyWith(
-      fontFamily: 'Catamaran',
-    );
-  }
 }
 
 class CustomElevatedButton extends BaseButton {
@@ -1151,7 +766,7 @@ class CustomElevatedButton extends BaseButton {
   }
 
   Widget get buildElevatedButtonWidget => Container(
-        height: this.height ?? 53.v,
+        height: this.height ?? 53,
         width: this.width ?? double.maxFinite,
         margin: margin,
         decoration: decoration,
@@ -1166,7 +781,12 @@ class CustomElevatedButton extends BaseButton {
               Text(
                 text,
                 style: buttonTextStyle ??
-                    CustomTextStyles.titleSmallDeeppurpleA200,
+                    TextStyle(
+                      color: Colors.deepPurple[200],
+                      fontSize: 15,
+                      fontFamily: 'Catamaran',
+                      fontWeight: FontWeight.w500,
+                    ),
               ),
               rightIcon ?? const SizedBox.shrink(),
             ],
@@ -1215,92 +835,8 @@ class BaseButton extends StatelessWidget {
   }
 }
 
-class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
-  CustomAppBar({
-    Key? key,
-    this.height,
-    this.leadingWidth,
-    this.leading,
-    this.title,
-    this.centerTitle,
-    this.actions,
-  }) : super(
-          key: key,
-        );
-
-  final double? height;
-
-  final double? leadingWidth;
-
-  final Widget? leading;
-
-  final Widget? title;
-
-  final bool? centerTitle;
-
-  final List<Widget>? actions;
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      elevation: 0,
-      toolbarHeight: height ?? 57.v,
-      automaticallyImplyLeading: false,
-      backgroundColor: Colors.transparent,
-      leadingWidth: leadingWidth ?? 0,
-      leading: leading,
-      title: title,
-      titleSpacing: 0,
-      centerTitle: centerTitle ?? false,
-      actions: actions,
-    );
-  }
-
-  @override
-  Size get preferredSize => Size(
-        SizeUtils.width,
-        height ?? 57.v,
-      );
-}
-
-class AppbarTrailingIconbutton extends StatelessWidget {
-  AppbarTrailingIconbutton({
-    Key? key,
-    this.imagePath,
-    this.margin,
-    this.onTap,
-  }) : super(
-          key: key,
-        );
-
-  String? imagePath;
-
-  EdgeInsetsGeometry? margin;
-
-  Function? onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: () {
-        onTap!.call();
-      },
-      child: Padding(
-        padding: margin ?? EdgeInsets.zero,
-        child: CustomIconButton(
-          height: 57.v,
-          width: 60.h,
-          child: CustomImageView(
-            imagePath: ImageConstant.imgGroup10,
-          ),
-        ),
-      ),
-    );
-  }
-}
-
 class CustomIconButton extends StatelessWidget {
-  CustomIconButton({
+  const CustomIconButton({
     Key? key,
     this.alignment,
     this.height,

@@ -31,7 +31,8 @@ class Breed {
   static List<Breed> listDog(Response response) {
     final json = jsonDecode(response.body) as List;
     final dogmodel = json.map((e) {
-      return Breed(breed: e['breed'], avatar: e['avatar'], type: e['type']);
+      return Breed(
+          breed: e['breed'], avatar: e['avatar'], type: e['type_id__type']);
     }).toList();
     return dogmodel;
   }

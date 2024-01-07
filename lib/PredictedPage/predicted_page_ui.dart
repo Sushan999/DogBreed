@@ -1,31 +1,14 @@
+import 'package:dogbreed/PredictedPage/model.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
 
-void main() {
-  runApp(MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Dog Breed Predictor',
-      debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        primarySwatch: Colors.lightGreen,
-      ),
-      home: Dog_predict(
-        dogImage: File('/dog_bot.jpg'),
-      ),
-    );
-  }
-}
-
 // ignore: camel_case_types
-class Dog_predict extends StatefulWidget {
-  const Dog_predict({super.key, required this.dogImage});
+class Dog_predicted_Page extends StatefulWidget {
+  const Dog_predicted_Page(
+      {super.key, required this.dogImage, required this.breeds});
 
   final File dogImage;
+  final List<PredictedBreed> breeds;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -33,13 +16,14 @@ class Dog_predict extends StatefulWidget {
 }
 
 // ignore: camel_case_types
-class _Dog_predictState extends State<Dog_predict> {
-  List<Map<String, dynamic>> identifiedBreeds = [];
+class _Dog_predictState extends State<Dog_predicted_Page> {
+  List<PredictedBreed> identifiedBreeds = [];
+  List colors = [Colors.red[400], Colors.orange[300], Colors.blue[200]];
 
   @override
   void initState() {
     super.initState();
-    simulateClassification();
+    identifiedBreeds = widget.breeds;
   }
 
   Future<void> classifyImage(File image) async {}
@@ -47,34 +31,6 @@ class _Dog_predictState extends State<Dog_predict> {
   void breedsOntTap(String breedName) {
     // ignore: avoid_print
     print('Tapped breed: $breedName');
-  }
-
-  void simulateClassification() {
-    // Simulated response data - Replace this with your API response structure
-    List<Map<String, dynamic>> mockResponse = [
-      {
-        'breedName': 'Labrador Retriever',
-        'accuracy': 85,
-        'image_path': '/dog_bot.jpg'
-      },
-      {
-        'breedName': 'Golden Retriever',
-        'accuracy': 75,
-        'image_path': '/dog_bot.jpg'
-      },
-      {
-        'breedName': 'German Shepherd',
-        'accuracy': 70,
-        'image_path': '/dog_bot.jpg'
-      },
-    ];
-
-    // Update identifiedBreeds with the mock response after a delay
-    Future.delayed(const Duration(seconds: 2), () {
-      setState(() {
-        identifiedBreeds = mockResponse;
-      });
-    });
   }
 
   @override
@@ -93,8 +49,8 @@ class _Dog_predictState extends State<Dog_predict> {
                 children: [
               // ignore: unnecessary_null_comparison
               widget.dogImage != null
-                  ? Image.asset(
-                      'dog_bot.jpg',
+                  ? Image.file(
+                      widget.dogImage,
                       height: 200,
                       width: 200,
                       fit: BoxFit.cover,
@@ -115,17 +71,24 @@ class _Dog_predictState extends State<Dog_predict> {
                               borderRadius: BorderRadius.circular(0),
                             ),
                             child: ListTile(
-                              onTap: () {
-                                breedsOntTap(breed['breedName']);
+                              onTap: () async {
+                                breedsOntTap(breed.breed);
                               },
-                              leading: Image.asset(
-                                breed['image_path'], // Path to the image asset
-                                height: 60,
-                                width: 60,
-                                fit: BoxFit.cover,
+
+                              leading: CircleAvatar(
+                                backgroundImage: NetworkImage(breed.avatar),
                               ),
-                              title: Text('${breed['breedName']}'),
-                              subtitle: Text('${breed['accuracy']}%'),
+                              // leading: Image.network(
+                              //   breed.avatar, // Path to the image asset
+                              //   height: 60,
+                              //   width: 60,
+                              //   fit: BoxFit.cover,
+                              // ),
+                              title: Text(
+                                breed.accuracy,
+                                selectionColor: colors[index],
+                              ),
+                              subtitle: Text(breed.breed),
                             ));
                       },
                     )),

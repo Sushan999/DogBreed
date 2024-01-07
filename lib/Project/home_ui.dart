@@ -173,8 +173,8 @@ class _HomeState extends State<Home> {
                   },
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, top: 20),
+              const Padding(
+                padding: EdgeInsets.only(left: 20, top: 20),
                 child: Align(
                   alignment: Alignment.bottomLeft,
                   child: Text(
@@ -183,8 +183,8 @@ class _HomeState extends State<Home> {
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 20, right: 20),
+              const Padding(
+                padding: EdgeInsets.only(left: 20, right: 20),
                 child: Align(
                   alignment: Alignment.bottomRight,
                   child: Text(
