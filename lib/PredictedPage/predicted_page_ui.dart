@@ -51,8 +51,8 @@ class _Dog_predictState extends State<Dog_predicted_Page> {
               widget.dogImage != null
                   ? Image.file(
                       widget.dogImage,
-                      height: 200,
-                      width: 200,
+                      height: 400,
+                      width: 400,
                       fit: BoxFit.cover,
                     )
                   : const SizedBox(height: 200, width: 200),
@@ -86,6 +86,8 @@ class _Dog_predictState extends State<Dog_predicted_Page> {
                               // ),
                               title: Text(
                                 breed.accuracy,
+                                style: TextStyle(
+                                    color: colors[index], fontSize: 15),
                                 selectionColor: colors[index],
                               ),
                               subtitle: Text(breed.breed),

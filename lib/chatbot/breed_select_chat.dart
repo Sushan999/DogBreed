@@ -22,7 +22,7 @@ class _BreedsListPageState extends State<BreedListPageBot> {
 
   Future<void> _loadBreeds() async {
     var client = http.Client();
-    var uri = Uri.parse('http://192.168.254.198:8000/breed/breed_list/');
+    var uri = Uri.parse('http://10.10.11.138:8000/breed/breed_list/');
     // final response = await http
     //     .get(Uri.parse('http://192.168.254.198:8000/breed/breed_list/'));
     var response = await client.get(uri);

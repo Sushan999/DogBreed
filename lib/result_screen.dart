@@ -32,58 +32,53 @@ class MyApp extends StatelessWidget {
 }
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({Key? key})
-      : super(
-          key: key,
-        );
-
+  const ResultScreen({super.key});
   @override
-  State<ResultScreen> createState() => _ResultScreenState();
+  // ignore: library_private_types_in_public_api
+  _ResultScreenState createState() => _ResultScreenState();
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  final List<String> imageUrls = [
+    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-running-outdoors.jpg",
+    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinschers-together-in-the-grass.jpg",
+    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-at-the-2016-ANC.jpg",
+  ];
+
+  int currentPage = 0;
+  late PageController pageController;
+  late Timer timer;
+
+  @override
+  void initState() {
+    super.initState();
+    // pageController = PageController(initialPage: currentPage);
+    pageController = PageController(initialPage: currentPage);
+    // Set up a timer for auto-sliding every 5 seconds
+    timer = Timer.periodic(const Duration(seconds: 4), (Timer t) {
+      if (currentPage < imageUrls.length - 1) {
+        currentPage++;
+      } else {
+        currentPage = 0;
+      }
+      pageController.animateToPage(
+        currentPage,
+        duration: const Duration(milliseconds: 500),
+        curve: Curves.easeInOut,
+      );
+    });
+  }
+
+  @override
+  void dispose() {
+    pageController.dispose();
+    timer.cancel();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
-
-    final List<String> imageUrls = [
-      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-running-outdoors.jpg",
-      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinschers-together-in-the-grass.jpg",
-      "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-at-the-2016-ANC.jpg",
-    ];
-
-    int currentPage = 0;
-    late PageController pageController =
-        PageController(initialPage: currentPage);
-    late Timer timer;
-
-    @override
-    void initState() {
-      super.initState();
-      // pageController = PageController(initialPage: currentPage);
-
-      // Set up a timer for auto-sliding every 5 seconds
-      timer = Timer.periodic(const Duration(seconds: 10), (Timer t) {
-        if (currentPage < imageUrls.length - 1) {
-          currentPage++;
-        } else {
-          currentPage = 0;
-        }
-        pageController.animateToPage(
-          currentPage,
-          duration: const Duration(milliseconds: 500),
-          curve: Curves.easeInOut,
-        );
-      });
-    }
-
-    @override
-    void dispose() {
-      pageController.dispose();
-      timer.cancel();
-      super.dispose();
-    }
-
     return SafeArea(
       child: Scaffold(
         // appBar: AppBar(
@@ -94,9 +89,9 @@ class _ResultScreenState extends State<ResultScreen> {
           child: Container(
             width: size.width,
             height: size.height,
-            padding: const EdgeInsets.symmetric(vertical: 50),
+            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 1),
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 SizedBox(
                   width: size.width,
@@ -446,8 +441,8 @@ class _ResultScreenState extends State<ResultScreen> {
                     ),
                     Container(
                       width: 150,
-                      margin: EdgeInsets.all(4),
-                      padding: EdgeInsets.symmetric(vertical: 4),
+                      margin: const EdgeInsets.all(4),
+                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.2),
                       ).copyWith(
@@ -461,9 +456,9 @@ class _ResultScreenState extends State<ResultScreen> {
                             imagePath:
                                 ImageConstant.imgHealthiconsWeightOutline,
                             height: 32,
-                            width: 32,
+                            width: 34,
                             margin: EdgeInsets.only(
-                              top: 4,
+                              top: 3,
                               bottom: 16,
                             ),
                           ),
@@ -488,12 +483,12 @@ class _ResultScreenState extends State<ResultScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "35 to 60 pounds",
+                                  "120 to 120 Pounds",
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
-                                    fontSize: 15,
+                                    fontSize: 13,
                                     fontFamily: 'Catamaran',
-                                    fontWeight: FontWeight.w500,
+                                    fontWeight: FontWeight.w600,
                                   ),
                                 )
                               ],

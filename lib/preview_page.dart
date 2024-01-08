@@ -22,7 +22,7 @@ class PreviewPagaeState extends State<PreviewPage> {
   Future<void> predictEfficientNetDogBreed(File imageFile) async {
     // var client = http.Client();
     final uri =
-        Uri.parse('http://192.168.254.198:8000/recognition/predict_from_both/');
+        Uri.parse('http://10.10.11.138:8000/recognition/predict_from_both/');
 
     // Create a multipart request
     var request = http.MultipartRequest('POST', uri)
