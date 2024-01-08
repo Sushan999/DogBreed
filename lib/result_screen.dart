@@ -428,7 +428,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                   "20 to 23.5 inches",
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
-                                    fontSize: 15,
+                                    fontSize: 14,
                                     fontFamily: 'Catamaran',
                                     fontWeight: FontWeight.w500,
                                   ),
