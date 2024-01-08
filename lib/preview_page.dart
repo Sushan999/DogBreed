@@ -6,7 +6,6 @@ import 'dart:io';
 import 'package:image/image.dart' as img;
 import 'dart:convert';
 import 'package:http/http.dart' as http;
-import 'package:velocity_x/velocity_x.dart';
 
 class PreviewPage extends StatefulWidget {
   const PreviewPage({Key? key, required this.picture}) : super(key: key);
@@ -22,7 +21,7 @@ class PreviewPagaeState extends State<PreviewPage> {
   Future<void> predictEfficientNetDogBreed(File imageFile) async {
     // var client = http.Client();
     final uri =
-        Uri.parse('http://10.10.11.138:8000/recognition/predict_from_both/');
+        Uri.parse('http://192.168.254.198:8000/recognition/predict_from_both/');
 
     // Create a multipart request
     var request = http.MultipartRequest('POST', uri)
