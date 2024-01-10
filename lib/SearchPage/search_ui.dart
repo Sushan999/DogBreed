@@ -3,30 +3,31 @@ import 'package:pupscan/utils/models.dart';
 import 'package:pupscan/DetailPage/detail_screen.dart';
 import 'package:flutter/material.dart';
 
-class BreedListPage extends StatefulWidget {
-  const BreedListPage({Key? key}) : super(key: key);
+class SerachPage extends StatefulWidget {
+  const SerachPage({Key? key}) : super(key: key);
 
   @override
   // ignore: library_private_types_in_public_api
-  _BreedsListPageState createState() => _BreedsListPageState();
+  _SearchListPageState createState() => _SearchListPageState();
 }
 
-class _BreedsListPageState extends State<BreedListPage> {
+class _SearchListPageState extends State<SerachPage> {
   List<ListBreed> _breeds = [];
   List<ListBreed> _filteredBreeds = [];
   bool isLoading = false;
 
+  final FocusNode _focusNode = FocusNode();
   final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
+    _focusNode.requestFocus();
     _loadBreedsList();
   }
 
   Future<void> _loadBreedsList() async {
     List<ListBreed> dogs = await ApiCalls.loadBreeds();
-    dogs.sort((a, b) => a.breed.compareTo(b.breed));
     setState(() {
       _breeds = dogs;
       _filteredBreeds = _breeds; // Initialize filtered list with all breeds
@@ -85,6 +86,7 @@ class _BreedsListPageState extends State<BreedListPage> {
             child: TextField(
               controller: _searchController,
               onChanged: _filterBreeds,
+              focusNode: _focusNode,
               decoration: InputDecoration(
                 labelText: 'Search by Breed',
                 suffixIcon: const Icon(Icons.search),

@@ -30,7 +30,7 @@ class _HomeState extends State<Home> {
     'https://monsterbullies.com/wp-content/uploads/2020/08/LILLY1-sml.jpg',
     'https://www.akc.org/wp-content/uploads/2016/11/AdobeStock_94435211-800x600.jpeg',
   ];
-  List<String> upperName = ['Husky', 'Terrier', 'Boston', 'German'];
+  List<String> upperName = ['Siberain Husky', 'Terrier', 'Boston', 'German'];
   List<String> lowerName = ['Golden Retriever', 'Pug'];
 
   List<CameraDescription>? cameras;

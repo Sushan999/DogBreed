@@ -5,6 +5,7 @@ import 'package:pupscan/chatbot/breed_select_chat.dart';
 import 'package:pupscan/Camera/camera_page.dart';
 import 'package:pupscan/HomeNavigation/home_ui.dart';
 import 'package:flutter/material.dart';
+import 'package:pupscan/SearchPage/search_ui.dart';
 
 class MyHome extends StatefulWidget {
   const MyHome({super.key});
@@ -28,7 +29,7 @@ class _HomeState extends State<MyHome> {
         'page': const BreedListPage(),
       },
       {
-        'page': const Home(),
+        'page': const SerachPage(),
       },
       {
         'page': const BreedListPageBot(),

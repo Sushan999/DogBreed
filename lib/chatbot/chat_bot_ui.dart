@@ -1,32 +1,12 @@
-import 'dart:convert';
+import 'package:pupscan/Api/api.dart';
 import 'package:pupscan/utils/models.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
-import 'package:http/http.dart' as http;
 //import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-
-class ChatMessage {
-  final String text;
-  final bool isBot;
-
-  ChatMessage({required this.text, required this.isBot});
-  factory ChatMessage.fromJson(Map<String, dynamic> json) {
-    return switch (json) {
-      {
-        'system': String text,
-      } =>
-        ChatMessage(
-          text: text,
-          isBot: true,
-        ),
-      _ => throw const FormatException('Failed to load album.'),
-    };
-  }
-}
 
 class ChatBot extends StatefulWidget {
   const ChatBot({super.key, required this.breed});
-  final BreedSelect breed;
+  final ListBreed breed;
 
   @override
   // ignore: library_private_types_in_public_api
@@ -44,12 +24,14 @@ class _ChatBotState extends State<ChatBot> {
     delayed();
     _message = [
       (ChatMessage(
-          text: "Hello there. How can I assist you today?", isBot: true))
+          text:
+              "Hello there. How can I assist you today?. Any Queries about ${widget.breed.breed}?.",
+          isBot: true))
     ];
   }
 
   Future<void> delayed() async {
-    await Future.delayed(const Duration(milliseconds: 500));
+    await Future.delayed(const Duration(milliseconds: 200));
   }
 
   void passMessage(String message) {
@@ -106,8 +88,6 @@ class _ChatBotState extends State<ChatBot> {
                                 NetworkImage(
                                     'https://miro.medium.com/v2/resize:fit:828/format:webp/1*rIkmavUeqyRySwlQdA9kKg.jpeg'),
                           )
-                        //https://static.displate.com/324x454/displate/2023-07-07/36564f7949ef83fec3743ccd3bbcabc2_20665b5530dd3d5737abad41cda98d27.avif
-                        //https://miro.medium.com/v2/resize:fit:828/format:webp/1*rIkmavUeqyRySwlQdA9kKg.jpeg
                         : null,
                     subtitle: Container(
                         decoration: BoxDecoration(
@@ -153,7 +133,7 @@ class _ChatBotState extends State<ChatBot> {
                       String message = _textController.text;
                       if (message.isNotEmpty) {
                         _message.add(ChatMessage(text: message, isBot: false));
-                        botMessage(message, widget.breed.breed);
+                        _botMessage(message, widget.breed.breed);
                         //passMessage(message);
                         _textController.clear();
                       }
@@ -173,14 +153,18 @@ class _ChatBotState extends State<ChatBot> {
     );
   }
 
-  Future<void> botMessage(String inputstring, String breed) async {
-    final response = await http.post(
-        Uri.parse('http://192.168.254.198:8000/chatbot/get_message/'),
-        body: {'input_string': inputstring, 'breed': breed});
+  Future<void> _botMessage(String inputstring, String breed) async {
+    Future.delayed(const Duration(milliseconds: 800), () {
+      setState(() {
+        _message.add(ChatMessage(text: "...", isBot: true));
+      });
+    });
+
+    ChatMessage message = await ApiCalls.botMessage(inputstring, breed);
 
     setState(() {
-      _message.add(ChatMessage.fromJson(
-          jsonDecode(response.body) as Map<String, dynamic>));
+      _message.removeLast();
+      _message.add(message);
     });
   }
 }

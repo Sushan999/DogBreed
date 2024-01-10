@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:pupscan/Api/api.dart';
 import 'package:pupscan/utils/models.dart';
-import 'package:pupscan/chatbot/chat_bot_ui.dart';
-import 'package:http/http.dart' as http;
+import 'package:pupscan/ChatBot/chat_bot_ui.dart';
 
 class BreedListPageBot extends StatefulWidget {
   const BreedListPageBot({Key? key}) : super(key: key);
@@ -12,8 +12,8 @@ class BreedListPageBot extends StatefulWidget {
 }
 
 class _BreedsListPageState extends State<BreedListPageBot> {
-  List<BreedSelect> _breeds = [];
-  List<BreedSelect> _filteredBreeds = [];
+  List<ListBreed> _breeds = [];
+  List<ListBreed> _filteredBreeds = [];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -24,11 +24,10 @@ class _BreedsListPageState extends State<BreedListPageBot> {
   }
 
   Future<void> _loadBreeds() async {
-    var client = http.Client();
-    var uri = Uri.parse('http://192.168.254.198:8000/breed/breed_list/');
-    var response = await client.get(uri);
+    List<ListBreed> breeds = await ApiCalls.loadBreeds();
+    breeds.sort((a, b) => a.breed.compareTo(b.breed));
     setState(() {
-      _breeds = BreedSelect.listDog(response);
+      _breeds = breeds;
       _filteredBreeds = _breeds; // Initialize filtered list with all breeds
     });
   }
@@ -58,7 +57,7 @@ class _BreedsListPageState extends State<BreedListPageBot> {
     );
   }
 
-  void _navigateToChatBot(BreedSelect breed) {
+  void _navigateToChatBot(ListBreed breed) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (c) {
@@ -87,13 +86,13 @@ class _BreedsListPageState extends State<BreedListPageBot> {
               onChanged: _filterBreeds,
               decoration: InputDecoration(
                 labelText: 'Search by Breed',
-                suffixIcon: Icon(Icons.search),
+                suffixIcon: const Icon(Icons.search),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: const BorderSide(color: Colors.green),
                   borderRadius: BorderRadius.circular(20),
                 ),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Colors.green),
+                  borderSide: const BorderSide(color: Colors.green),
                   borderRadius: BorderRadius.circular(20),
                 ),
               ),

@@ -1,9 +1,9 @@
-import 'dart:convert';
+import 'package:flutter/services.dart';
+import 'package:pupscan/Api/api.dart';
 import 'package:pupscan/utils/models.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:http/http.dart' as http;
-import 'package:pupscan/DetailPage/result_screen.dart';
+import 'package:pupscan/DetailPage/detail_screen.dart';
 
 // ignore: camel_case_types
 class Dog_predicted_Page extends StatefulWidget {
@@ -29,24 +29,12 @@ class _Dog_predictState extends State<Dog_predicted_Page> {
     identifiedBreeds = widget.breeds;
   }
 
-  Future<DogDetail> _loadDetail(int id) async {
-    final response = await http.post(
-        Uri.parse('http://192.168.254.198:8000/breed/breed_detail/'),
-        body: {'index': id.toString()});
-
-    return DogDetail.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
-  }
-
-  Future<void> classifyImage(File image) async {}
-
   void breedsOntTap(BuildContext context, PredictedBreed breed) async {
-    DogDetail clickedDog = await _loadDetail(breed.id);
     // ignore: use_build_context_synchronously
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (c) {
-          return ResultScreen(breed: clickedDog);
+          return ResultScreen(id: breed.id);
           // return ResultScreen(id: breedIndex);
         },
       ),

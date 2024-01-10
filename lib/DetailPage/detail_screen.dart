@@ -3,40 +3,32 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pupscan/Api/api.dart';
 import 'package:pupscan/utils/models.dart';
 import 'package:readmore/readmore.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({super.key, required this.breed});
-  final DogDetail breed;
+  const ResultScreen({super.key, required this.id});
+  final int id;
   @override
   // ignore: library_private_types_in_public_api
   _ResultScreenState createState() => _ResultScreenState();
 }
 
 class _ResultScreenState extends State<ResultScreen> {
+  late DogDetail _dog;
   late List<String> imageUrls = [];
 
   int currentPage = 0;
   late PageController pageController;
   late Timer timer;
 
-  void _launchURL(String url) async {
-    if (await canLaunchUrl(Uri.parse(url))) {
-      await launchUrl(Uri.parse(url));
-    } else {
-      throw 'Could not launch $url';
-    }
-  }
-
   @override
   void initState() {
-    // _loadDetails();
     super.initState();
-    imageUrls = [widget.breed.img, widget.breed.img0, widget.breed.img1];
-
+    _loadDetail();
     // pageController = PageController(initialPage: currentPage);
     pageController = PageController(initialPage: currentPage);
     // Set up a timer for auto-sliding every 5 seconds
@@ -51,6 +43,14 @@ class _ResultScreenState extends State<ResultScreen> {
         duration: const Duration(milliseconds: 500),
         curve: Curves.easeInOut,
       );
+    });
+  }
+
+  Future<void> _loadDetail() async {
+    DogDetail dog = await ApiCalls.loadDetail(widget.id);
+    setState(() {
+      _dog = dog;
+      imageUrls = [dog.img0, dog.img, dog.img1];
     });
   }
 
@@ -70,145 +70,150 @@ class _ResultScreenState extends State<ResultScreen> {
           title: const Text('Breed Detail'),
           backgroundColor: Colors.lightGreen[200],
         ),
-        body: SingleChildScrollView(
-          child: Container(
-            width: size.width,
-            height: size.height,
-            padding: const EdgeInsets.symmetric(vertical: 40, horizontal: 1),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                SizedBox(
+        body: imageUrls.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Container(
                   width: size.width,
-                  height: 180,
-                  child: PageView.builder(
-                    controller: pageController,
-                    itemCount: imageUrls.length,
-                    onPageChanged: (index) {
-                      setState(() {
-                        currentPage = index;
-                      });
-                    },
-                    itemBuilder: (context, index) {
-                      return Image.network(
-                        imageUrls[index],
-                        fit: BoxFit.fitHeight,
-                      );
-                    },
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Card(
-                  clipBehavior: Clip.antiAlias,
-                  elevation: 0,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadiusStyle.roundedBorder10,
-                  ),
-                  child: Container(
-                    height: 550,
-                    width: double.maxFinite,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadiusStyle.roundedBorder10,
-                    ),
-                    child: SingleChildScrollView(
-                      child: Stack(
-                        alignment: Alignment.bottomLeft,
-                        children: [
-                          _buildDogDetails(context),
-                          const SizedBox(
-                            height: 4,
+                  height: size.height,
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 40, horizontal: 1),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      SizedBox(
+                        width: size.width,
+                        height: 180,
+                        child: PageView.builder(
+                          controller: pageController,
+                          itemCount: imageUrls.length,
+                          onPageChanged: (index) {
+                            setState(() {
+                              currentPage = index;
+                            });
+                          },
+                          itemBuilder: (context, index) {
+                            return Image.network(
+                              imageUrls[index],
+                              fit: BoxFit.fitHeight,
+                            );
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Card(
+                        clipBehavior: Clip.antiAlias,
+                        elevation: 0,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadiusStyle.roundedBorder10,
+                        ),
+                        child: Container(
+                          height: 550,
+                          width: double.maxFinite,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadiusStyle.roundedBorder10,
                           ),
-                          Align(
-                            alignment: Alignment.bottomLeft,
-                            child: Container(
-                              margin: const EdgeInsets.only(
-                                left: 35,
-                                top: 350,
-                                right: 185,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 7,
-                                vertical: 0,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.green.withOpacity(0.2),
-                              ).copyWith(
-                                borderRadius: BorderRadiusStyle.roundedBorder10,
-                              ),
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  CustomImageView(
-                                    imagePath:
-                                        ImageConstant.imgIconoirBirthdayCake,
-                                    height: 30,
-                                    width: 32,
+                          child: SingleChildScrollView(
+                            child: Stack(
+                              alignment: Alignment.bottomLeft,
+                              children: [
+                                _buildDogDetails(context),
+                                const SizedBox(
+                                  height: 4,
+                                ),
+                                Align(
+                                  alignment: Alignment.bottomLeft,
+                                  child: Container(
                                     margin: const EdgeInsets.only(
-                                      top: 2,
-                                      bottom: 17,
+                                      left: 35,
+                                      top: 350,
+                                      right: 185,
                                     ),
-                                  ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(
-                                      left: 1,
-                                      top: 1,
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 7,
+                                      vertical: 0,
                                     ),
-                                    child: Column(
+                                    decoration: BoxDecoration(
+                                      color: Colors.green.withOpacity(0.2),
+                                    ).copyWith(
+                                      borderRadius:
+                                          BorderRadiusStyle.roundedBorder10,
+                                    ),
+                                    child: Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
-                                        Text(
-                                          "Life Expectancy",
-                                          style: TextStyle(
-                                            color: Colors.lightGreen[800],
-                                            fontSize: 15,
-                                            fontFamily: 'Catamaran',
-                                            fontWeight: FontWeight.w500,
+                                        CustomImageView(
+                                          imagePath: ImageConstant
+                                              .imgIconoirBirthdayCake,
+                                          height: 30,
+                                          width: 32,
+                                          margin: const EdgeInsets.only(
+                                            top: 2,
+                                            bottom: 17,
                                           ),
                                         ),
-                                        Text(
-                                          widget.breed.life,
-                                          style: TextStyle(
-                                            color: Colors.lightGreen[800],
-                                            fontSize: 15,
-                                            fontFamily: 'Catamaran',
-                                            fontWeight: FontWeight.w500,
+                                        Padding(
+                                          padding: const EdgeInsets.only(
+                                            left: 1,
+                                            top: 1,
+                                          ),
+                                          child: Column(
+                                            children: [
+                                              Text(
+                                                "Life Expectancy",
+                                                style: TextStyle(
+                                                  color: Colors.lightGreen[800],
+                                                  fontSize: 15,
+                                                  fontFamily: 'Catamaran',
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              Text(
+                                                _dog.life,
+                                                style: TextStyle(
+                                                  color: Colors.lightGreen[800],
+                                                  fontSize: 15,
+                                                  fontFamily: 'Catamaran',
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                CustomElevatedButton(
+                                  onPressed: () {
+                                    launchUrl(Uri.parse(_dog.akc));
+                                  },
+                                  height: 50,
+                                  width: 167,
+                                  text: "Learn More",
+                                  margin: const EdgeInsets.only(right: 15),
+                                  leftIcon: Container(
+                                    margin: const EdgeInsets.only(right: 15),
+                                    // child: CustomImageView(
+                                    //   // imagePath:
+                                    //   //     ImageConstant.imgSolarhealthlineduotone,
+                                    //   height: 32.adaptSize,
+                                    //   width: 32.adaptSize,
+                                    // ),
+                                  ),
+                                  buttonStyle: const ButtonStyle(),
+                                  alignment: Alignment.bottomRight,
+                                ),
+                              ],
                             ),
                           ),
-                          CustomElevatedButton(
-                            onPressed: () {
-                              launchUrl(Uri.parse(widget.breed.akc));
-                            },
-                            height: 50,
-                            width: 167,
-                            text: "Learn More",
-                            margin: const EdgeInsets.only(right: 15),
-                            leftIcon: Container(
-                              margin: const EdgeInsets.only(right: 15),
-                              // child: CustomImageView(
-                              //   // imagePath:
-                              //   //     ImageConstant.imgSolarhealthlineduotone,
-                              //   height: 32.adaptSize,
-                              //   width: 32.adaptSize,
-                              // ),
-                            ),
-                            buttonStyle: const ButtonStyle(),
-                            alignment: Alignment.bottomRight,
-                          ),
-                        ],
+                        ),
                       ),
-                    ),
+                    ],
                   ),
                 ),
-              ],
-            ),
-          ),
-        ),
+              ),
       ),
     );
   }
@@ -280,8 +285,8 @@ class _ResultScreenState extends State<ResultScreen> {
                                 bottom: 19,
                               ),
                               child: Text(
-                                widget.breed.breed,
-                                style: TextStyle(
+                                _dog.breed,
+                                style: const TextStyle(
                                   color: Colors.black,
                                   fontSize: 29,
                                   fontFamily: 'Catamaran',
@@ -308,8 +313,8 @@ class _ResultScreenState extends State<ResultScreen> {
                                         BorderRadiusStyle.roundedBorder10,
                                   ),
                                   child: Text(
-                                    widget.breed.character,
-                                    style: TextStyle(color: Colors.black),
+                                    _dog.character,
+                                    style: const TextStyle(color: Colors.black),
                                     // style: CustomTextStyles.bodySmallBlack900,
                                   ),
                                 ),
@@ -342,18 +347,18 @@ class _ResultScreenState extends State<ResultScreen> {
               child: SizedBox(
                 width: 324,
                 child: ReadMoreText(
-                  widget.breed.description,
+                  _dog.description,
                   trimLines: 12,
                   colorClickableText: Colors.black,
                   trimMode: TrimMode.Line,
                   trimCollapsedText: "Read more",
-                  moreStyle: TextStyle(
+                  moreStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontFamily: 'Catamaran',
                     fontWeight: FontWeight.w500,
                   ),
-                  lessStyle: TextStyle(
+                  lessStyle: const TextStyle(
                     color: Colors.black,
                     fontSize: 15,
                     fontFamily: 'Catamaran',
@@ -363,11 +368,11 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 9),
+            const SizedBox(height: 9),
             Align(
               alignment: Alignment.center,
               child: Padding(
-                padding: EdgeInsets.only(
+                padding: const EdgeInsets.only(
                   left: 13,
                   right: 5,
                 ),
@@ -396,12 +401,12 @@ class _ResultScreenState extends State<ResultScreen> {
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 2),
+                            padding: const EdgeInsets.only(bottom: 2),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: EdgeInsets.only(left: 1),
+                                  padding: const EdgeInsets.only(left: 1),
                                   child: Text(
                                     "Height :",
                                     style: TextStyle(
@@ -413,7 +418,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                   ),
                                 ),
                                 Text(
-                                  widget.breed.height,
+                                  _dog.height,
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
                                     fontSize: 14,
@@ -446,19 +451,19 @@ class _ResultScreenState extends State<ResultScreen> {
                                 ImageConstant.imgHealthiconsWeightOutline,
                             height: 32,
                             width: 34,
-                            margin: EdgeInsets.only(
+                            margin: const EdgeInsets.only(
                               top: 3,
                               bottom: 16,
                             ),
                           ),
                           Padding(
-                            padding: EdgeInsets.only(bottom: 1),
+                            padding: const EdgeInsets.only(bottom: 1),
                             child: Column(
                               children: [
                                 Align(
                                   alignment: Alignment.centerLeft,
                                   child: Padding(
-                                    padding: EdgeInsets.only(right: 50),
+                                    padding: const EdgeInsets.only(right: 50),
                                     child: Text(
                                       "Weight :",
                                       style: TextStyle(
@@ -472,7 +477,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                   ),
                                 ),
                                 Text(
-                                  widget.breed.weight,
+                                  _dog.weight,
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
                                     fontSize: 13,
@@ -598,7 +603,7 @@ class CustomImageView extends StatelessWidget {
     if (imagePath != null) {
       switch (imagePath!.imageType) {
         case ImageType.svg:
-          return Container(
+          return SizedBox(
             height: height,
             width: width,
             child: SvgPicture.asset(
@@ -625,7 +630,7 @@ class CustomImageView extends StatelessWidget {
             fit: fit,
             imageUrl: imagePath!,
             color: color,
-            placeholder: (context, url) => Container(
+            placeholder: (context, url) => SizedBox(
               height: 30,
               width: 30,
               child: LinearProgressIndicator(
@@ -651,17 +656,17 @@ class CustomImageView extends StatelessWidget {
           );
       }
     }
-    return SizedBox();
+    return const SizedBox();
   }
 }
 
 extension ImageTypeExtension on String {
   ImageType get imageType {
-    if (this.startsWith('http') || this.startsWith('https')) {
+    if (startsWith('http') || startsWith('https')) {
       return ImageType.network;
-    } else if (this.endsWith('.svg')) {
+    } else if (endsWith('.svg')) {
       return ImageType.svg;
-    } else if (this.startsWith('file://')) {
+    } else if (startsWith('file://')) {
       return ImageType.file;
     } else {
       return ImageType.png;
@@ -708,7 +713,7 @@ class ImageConstant {
 
 class CustomElevatedButton extends BaseButton {
   CustomElevatedButton({
-    Key? key,
+    super.key,
     this.decoration,
     this.leftIcon,
     this.rightIcon,
