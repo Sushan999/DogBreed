@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:dogbreed/preview_page.dart';
+import 'package:pupscan/Camera/preview_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:image_picker/image_picker.dart';

@@ -1,57 +1,51 @@
-// import 'dart:js';
-
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:pupscan/models.dart';
 import 'package:readmore/readmore.dart';
 import 'dart:io';
-
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  // ignore: empty_constructor_bodies
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'PupScan',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      home: const ResultScreen(),
-    );
-  }
-}
+import 'package:url_launcher/url_launcher.dart';
 
 class ResultScreen extends StatefulWidget {
-  const ResultScreen({super.key});
+  const ResultScreen({super.key, required this.breed});
+  final DogDetail breed;
   @override
   // ignore: library_private_types_in_public_api
   _ResultScreenState createState() => _ResultScreenState();
 }
 
 class _ResultScreenState extends State<ResultScreen> {
-  final List<String> imageUrls = [
-    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-running-outdoors.jpg",
-    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinschers-together-in-the-grass.jpg",
-    "https://www.akc.org/wp-content/uploads/2017/11/Affenpinscher-at-the-2016-ANC.jpg",
-  ];
+  late List<String> imageUrls = [];
 
   int currentPage = 0;
   late PageController pageController;
   late Timer timer;
 
+  // Future<void> _loadDetails() async {
+  //   final response = await http.post(
+  //       Uri.parse('http://192.168.254.198:8000/breed/breed_detail/'),
+  //       body: {'index': widget.id.toString()});
+
+  //   setState(() {
+  //     imageUrls = [widget.breed.img, widget.breed.img0, widget.breed.img1];
+  //   });
+  // }
+  _launchURL(String url) async {
+    if (await canLaunchUrl(Uri.parse(url))) {
+      await launchUrl(Uri.parse(url));
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
   @override
   void initState() {
+    // _loadDetails();
     super.initState();
+    imageUrls = [widget.breed.img, widget.breed.img0, widget.breed.img1];
+
     // pageController = PageController(initialPage: currentPage);
     pageController = PageController(initialPage: currentPage);
     // Set up a timer for auto-sliding every 5 seconds
@@ -81,10 +75,10 @@ class _ResultScreenState extends State<ResultScreen> {
     var size = MediaQuery.of(context).size;
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   title: const Text('Predicted Breed'),
-        //   backgroundColor: Colors.lightGreen[200],
-        // ),
+        appBar: AppBar(
+          title: const Text('Breed Detail'),
+          backgroundColor: Colors.lightGreen[200],
+        ),
         body: SingleChildScrollView(
           child: Container(
             width: size.width,
@@ -180,7 +174,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                           ),
                                         ),
                                         Text(
-                                          "12 to 14 years",
+                                          widget.breed.life,
                                           style: TextStyle(
                                             color: Colors.lightGreen[800],
                                             fontSize: 15,
@@ -196,6 +190,9 @@ class _ResultScreenState extends State<ResultScreen> {
                             ),
                           ),
                           CustomElevatedButton(
+                            onPressed: () {
+                              launchUrl(Uri.parse(widget.breed.akc));
+                            },
                             height: 50,
                             width: 167,
                             text: "Learn More",
@@ -284,15 +281,15 @@ class _ResultScreenState extends State<ResultScreen> {
                       child: Stack(
                         alignment: Alignment.bottomLeft,
                         children: [
-                          const Align(
+                          Align(
                             alignment: Alignment.bottomLeft,
                             child: Padding(
-                              padding: EdgeInsets.only(
+                              padding: const EdgeInsets.only(
                                 left: 4,
                                 bottom: 19,
                               ),
                               child: Text(
-                                "Siberian Husky",
+                                widget.breed.breed,
                                 style: TextStyle(
                                   color: Colors.black,
                                   fontSize: 29,
@@ -307,12 +304,12 @@ class _ResultScreenState extends State<ResultScreen> {
                             child: Row(
                               children: [
                                 Container(
-                                  width: 150,
+                                  width: 300,
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 9,
                                     vertical: 1,
                                   ),
-                                  decoration: BoxDecoration(
+                                  decoration: const BoxDecoration(
                                           color: Color.fromARGB(
                                               255, 201, 200, 200))
                                       .copyWith(
@@ -320,7 +317,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                         BorderRadiusStyle.roundedBorder10,
                                   ),
                                   child: Text(
-                                    "Working Dog",
+                                    widget.breed.character,
                                     style: TextStyle(color: Colors.black),
                                     // style: CustomTextStyles.bodySmallBlack900,
                                   ),
@@ -354,7 +351,7 @@ class _ResultScreenState extends State<ResultScreen> {
               child: SizedBox(
                 width: 324,
                 child: ReadMoreText(
-                  "Generally considered dogkind's finest all-purpose worker, the German Shepherd Dog is a large, agile, muscular dog of noble character and high intelligence. Loyal, confident, courageous, and steady, the German Shepherd is truly a dog lover's delight. German Shepherd Dogs can stand as high as 26 inches at the shoulder and, when viewed in outline, presents a picture of smooth, graceful curves rather than angles. The natural gait is a free-and-easy trot, but they can turn it up a notch or two and reach great speeds. There are many reasons why German Shepherds stand in the front rank of canine royalty, but experts say their defining attribute is character: loyalty, courage, confidence, the ability to learn commands for many tasks, and the willingness to put their life on the line in defense of loved ones. German Shepherds will be gentle family pets and steadfast guardians, but, the breed standard says, there's a 'certain aloofness that does not lend itself to immediate and indiscriminate friendships.'",
+                  widget.breed.description,
                   trimLines: 12,
                   colorClickableText: Colors.black,
                   trimMode: TrimMode.Line,
@@ -425,7 +422,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "20 to 23.5 inches",
+                                  widget.breed.height,
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
                                     fontSize: 14,
@@ -442,7 +439,8 @@ class _ResultScreenState extends State<ResultScreen> {
                     Container(
                       width: 150,
                       margin: const EdgeInsets.all(4),
-                      padding: EdgeInsets.symmetric(vertical: 4, horizontal: 0),
+                      padding: const EdgeInsets.symmetric(
+                          vertical: 4, horizontal: 0),
                       decoration: BoxDecoration(
                         color: Colors.green.withOpacity(0.2),
                       ).copyWith(
@@ -483,7 +481,7 @@ class _ResultScreenState extends State<ResultScreen> {
                                   ),
                                 ),
                                 Text(
-                                  "120 to 120 Pounds",
+                                  widget.breed.weight,
                                   style: TextStyle(
                                     color: Colors.lightGreen[800],
                                     fontSize: 13,
@@ -501,7 +499,7 @@ class _ResultScreenState extends State<ResultScreen> {
                 ),
               ),
             ),
-            SizedBox(height: 19),
+            const SizedBox(height: 19),
           ],
         ),
       ),

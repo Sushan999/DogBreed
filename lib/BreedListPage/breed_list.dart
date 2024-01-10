@@ -1,103 +1,24 @@
-// // ignore_for_file: library_private_types_in_public_api
-// import 'package:dogbreed/BreedListPage/models.dart';
-// import 'package:dogbreed/breeds_UI.dart';
-// import 'package:flutter/material.dart';
-// import 'package:http/http.dart' as http;
+import 'dart:convert';
 
-// class BreedListPage extends StatefulWidget {
-//   const BreedListPage({super.key});
-
-//   @override
-//   _BreedsListPageState createState() => _BreedsListPageState();
-// }
-
-// class _BreedsListPageState extends State<BreedListPage> {
-//   List<Breed> _breeds = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     _loadBreeds();
-//   }
-
-//   Future<void> _loadBreeds() async {
-//     var client = http.Client();
-//     var uri = Uri.parse('http://10.10.11.138:8000/breed/breed_list/');
-//     // final response = await http
-//     //     .get(Uri.parse('http://192.168.254.198:8000/breed/breed_list/'));
-//     var response = await client.get(uri);
-//     setState(() {
-//       _breeds = Breed.listDog(response);
-//     });
-//   }
-
-//   Widget _buildBreedListTile(BuildContext context, int index) {
-//     var breeds = _breeds[index];
-
-//     return ListTile(
-//       onTap: () => _navigateToBreedDetails(breeds, index),
-//       leading: Hero(
-//         tag: index,
-//         child: CircleAvatar(
-//           backgroundImage: NetworkImage(breeds.avatar),
-//         ),
-//       ),
-//       title: Text(breeds.breed),
-//       subtitle: Text(breeds.type),
-//     );
-//   }
-
-//   void _navigateToBreedDetails(Breed friend, Object avatarTag) {
-//     Navigator.of(context).push(
-//       MaterialPageRoute(
-//         builder: (c) {
-//           return BreedDetailPage(
-//             dogBreed: friend.breed,
-//           );
-//         },
-//       ),
-//     );
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     Widget content;
-
-//     if (_breeds.isEmpty) {
-//       content = const Center(
-//         child: CircularProgressIndicator(),
-//       );
-//     } else {
-//       content = ListView.builder(
-//         itemCount: _breeds.length,
-//         itemBuilder: _buildBreedListTile,
-//       );
-//     }
-
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: const Text('Identified Breeds'),
-//         backgroundColor: Colors.lightGreen[200],
-//       ),
-//       body: content,
-//     );
-//   }
-// }
-// ignore_for_file: library_private_types_in_public_api
-import 'package:dogbreed/BreedListPage/models.dart';
-import 'package:dogbreed/breeds_UI.dart';
+import 'package:pupscan/models.dart';
+import 'package:pupscan/DetailPage/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class BreedListPage extends StatefulWidget {
-  const BreedListPage({super.key});
+  const BreedListPage({Key? key}) : super(key: key);
 
   @override
+  // ignore: library_private_types_in_public_api
   _BreedsListPageState createState() => _BreedsListPageState();
 }
 
 class _BreedsListPageState extends State<BreedListPage> {
-  List<Breed> _breeds = [];
+  List<ListBreed> _breeds = [];
+  List<ListBreed> _filteredBreeds = [];
+  bool isLoading = false;
+
+  final TextEditingController _searchController = TextEditingController();
 
   @override
   void initState() {
@@ -108,16 +29,33 @@ class _BreedsListPageState extends State<BreedListPage> {
   Future<void> _loadBreeds() async {
     var client = http.Client();
     var uri = Uri.parse('http://192.168.254.198:8000/breed/breed_list/');
-    // final response = await http
-    //     .get(Uri.parse('http://192.168.254.198:8000/breed/breed_list/'));
     var response = await client.get(uri);
     setState(() {
-      _breeds = Breed.listDog(response);
+      _breeds = ListBreed.listBreeds(jsonDecode(response.body));
+      _filteredBreeds = _breeds; // Initialize filtered list with all breeds
+    });
+  }
+
+  Future<DogDetail> _loadDetail(int id) async {
+    final response = await http.post(
+        Uri.parse('http://192.168.254.198:8000/breed/breed_detail/'),
+        body: {'index': id.toString()});
+
+    return DogDetail.fromJson(
+        jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  void _filterBreeds(String query) {
+    setState(() {
+      _filteredBreeds = _breeds
+          .where((breed) =>
+              breed.breed.toLowerCase().contains(query.toLowerCase()))
+          .toList();
     });
   }
 
   Widget _buildBreedListTile(BuildContext context, int index) {
-    var breeds = _breeds[index];
+    var breeds = _filteredBreeds[index];
 
     return ListTile(
       onTap: () => _navigateToBreedDetails(breeds, index),
@@ -132,12 +70,16 @@ class _BreedsListPageState extends State<BreedListPage> {
     );
   }
 
-  void _navigateToBreedDetails(Breed friend, Object avatarTag) {
+  Future<void> _navigateToBreedDetails(ListBreed breed, int index) async {
+    isLoading = true;
+    DogDetail clickedDog = await _loadDetail(breed.id);
+    // ignore: use_build_context_synchronously
+    isLoading = false;
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (c) {
-          return BreedDetailPage(
-            dogBreed: friend.breed,
+          return ResultScreen(
+            breed: clickedDog,
           );
         },
       ),
@@ -146,25 +88,55 @@ class _BreedsListPageState extends State<BreedListPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget content;
-
-    if (_breeds.isEmpty) {
-      content = const Center(
-        child: CircularProgressIndicator(),
-      );
-    } else {
-      content = ListView.builder(
-        itemCount: _breeds.length,
-        itemBuilder: _buildBreedListTile,
-      );
-    }
-
     return Scaffold(
       appBar: AppBar(
         title: const Text('Identified Breeds'),
         backgroundColor: Colors.lightGreen[200],
       ),
-      body: content,
+      body: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.only(left: 20, right: 20, top: 20, bottom: 10),
+            child: TextField(
+              controller: _searchController,
+              onChanged: _filterBreeds,
+              decoration: InputDecoration(
+                labelText: 'Search by Breed',
+                suffixIcon: Icon(Icons.search),
+                focusedBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+                enabledBorder: OutlineInputBorder(
+                  borderSide: BorderSide(color: Colors.green),
+                  borderRadius: BorderRadius.circular(20),
+                ),
+              ),
+            ),
+          ),
+          Expanded(
+            child: _buildBreedListView(),
+          ),
+        ],
+      ),
     );
+  }
+
+  Widget _buildBreedListView() {
+    Widget content;
+
+    if (_filteredBreeds.isEmpty || isLoading) {
+      content = const Center(
+        child: CircularProgressIndicator(),
+      );
+    } else {
+      content = ListView.builder(
+        itemCount: _filteredBreeds.length,
+        itemBuilder: _buildBreedListTile,
+      );
+    }
+
+    return content;
   }
 }

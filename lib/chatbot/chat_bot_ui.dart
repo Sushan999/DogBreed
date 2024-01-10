@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:dogbreed/BreedListPage/models.dart';
+import 'package:pupscan/chatbot/models.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:http/http.dart' as http;
@@ -175,7 +175,7 @@ class _ChatBotState extends State<ChatBot> {
 
   Future<void> botMessage(String inputstring, String breed) async {
     final response = await http.post(
-        Uri.parse('http://10.10.11.138:8000/chatbot/get_message/'),
+        Uri.parse('http://192.168.254.198:8000/chatbot/get_message/'),
         body: {'input_string': inputstring, 'breed': breed});
 
     setState(() {
