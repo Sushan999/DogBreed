@@ -9,7 +9,6 @@ class ApiCalls {
     var client = http.Client();
     var uri = Uri.parse('http://$address:8000/breed/breed_list/');
     var response = await client.get(uri);
-
     return ListBreed.listBreeds(jsonDecode(response.body));
   }
 
@@ -55,5 +54,19 @@ class ApiCalls {
         body: {'input_string': inputstring, 'breed': breed});
     return ChatMessage.fromJson(
         jsonDecode(response.body) as Map<String, dynamic>);
+  }
+
+  static Future<List<ListBreed>> loadTopHome() async {
+    var client = http.Client();
+    var uri = Uri.parse('http://$address:8000/breed/top/');
+    var response = await client.get(uri);
+    return ListBreed.listBreeds(jsonDecode(response.body));
+  }
+
+  static Future<List<ListBreed>> loadRecomHome() async {
+    var client = http.Client();
+    var uri = Uri.parse('http://$address:8000/breed/recommended/');
+    var response = await client.get(uri);
+    return ListBreed.listBreeds(jsonDecode(response.body));
   }
 }
