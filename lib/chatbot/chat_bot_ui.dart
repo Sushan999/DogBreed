@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:pupscan/chatbot/models.dart';
+import 'package:pupscan/utils/models.dart';
 import 'package:flutter/material.dart';
 import 'package:velocity_x/velocity_x.dart';
 import 'package:http/http.dart' as http;
@@ -26,7 +26,7 @@ class ChatMessage {
 
 class ChatBot extends StatefulWidget {
   const ChatBot({super.key, required this.breed});
-  final Breed breed;
+  final BreedSelect breed;
 
   @override
   // ignore: library_private_types_in_public_api

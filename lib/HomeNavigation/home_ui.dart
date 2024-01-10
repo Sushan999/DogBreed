@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:pupscan/models.dart';
+import 'package:pupscan/utils/models.dart';
 import '../Camera/camera_page.dart';
 import 'package:http/http.dart' as http;
 

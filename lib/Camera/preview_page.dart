@@ -1,5 +1,5 @@
 import 'package:camera/camera.dart';
-import 'package:pupscan/models.dart';
+import 'package:pupscan/utils/models.dart';
 import 'package:pupscan/PredictedPage/predicted_page_ui.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';

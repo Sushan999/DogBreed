@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 // ignore: depend_on_referenced_packages
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:pupscan/models.dart';
+import 'package:pupscan/utils/models.dart';
 import 'package:readmore/readmore.dart';
 import 'dart:io';
 import 'package:url_launcher/url_launcher.dart';
@@ -23,16 +23,7 @@ class _ResultScreenState extends State<ResultScreen> {
   late PageController pageController;
   late Timer timer;
 
-  // Future<void> _loadDetails() async {
-  //   final response = await http.post(
-  //       Uri.parse('http://192.168.254.198:8000/breed/breed_detail/'),
-  //       body: {'index': widget.id.toString()});
-
-  //   setState(() {
-  //     imageUrls = [widget.breed.img, widget.breed.img0, widget.breed.img1];
-  //   });
-  // }
-  _launchURL(String url) async {
+  void _launchURL(String url) async {
     if (await canLaunchUrl(Uri.parse(url))) {
       await launchUrl(Uri.parse(url));
     } else {

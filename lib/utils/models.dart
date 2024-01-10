@@ -210,3 +210,39 @@ class PredictedBreed {
     return dogmodel;
   }
 }
+
+class BreedSelect {
+  BreedSelect({
+    required this.avatar,
+    required this.breed,
+    required this.type,
+  });
+
+  final String avatar;
+  final String breed;
+  final String type;
+
+  factory BreedSelect.fromJson(Map<String, dynamic> json) {
+    return switch (json) {
+      {
+        'Model': String avater,
+        'Breed': String breed,
+        'Accuracy': String type,
+      } =>
+        BreedSelect(
+          avatar: avater,
+          breed: breed,
+          type: type,
+        ),
+      _ => throw const FormatException('Failed to load album.'),
+    };
+  }
+  static List<BreedSelect> listDog(Response response) {
+    final json = jsonDecode(response.body) as List;
+    final dogmodel = json.map((e) {
+      return BreedSelect(
+          breed: e['breed'], avatar: e['avatar'], type: e['type_id__type']);
+    }).toList();
+    return dogmodel;
+  }
+}

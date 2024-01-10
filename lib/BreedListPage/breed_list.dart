@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:pupscan/models.dart';
+import 'package:pupscan/utils/models.dart';
 import 'package:pupscan/DetailPage/result_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;

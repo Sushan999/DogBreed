@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:pupscan/chatbot/models.dart';
+import 'package:pupscan/utils/models.dart';
 import 'package:pupscan/chatbot/chat_bot_ui.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,8 +12,8 @@ class BreedListPageBot extends StatefulWidget {
 }
 
 class _BreedsListPageState extends State<BreedListPageBot> {
-  List<Breed> _breeds = [];
-  List<Breed> _filteredBreeds = [];
+  List<BreedSelect> _breeds = [];
+  List<BreedSelect> _filteredBreeds = [];
 
   final TextEditingController _searchController = TextEditingController();
 
@@ -28,7 +28,7 @@ class _BreedsListPageState extends State<BreedListPageBot> {
     var uri = Uri.parse('http://192.168.254.198:8000/breed/breed_list/');
     var response = await client.get(uri);
     setState(() {
-      _breeds = Breed.listDog(response);
+      _breeds = BreedSelect.listDog(response);
       _filteredBreeds = _breeds; // Initialize filtered list with all breeds
     });
   }
@@ -58,7 +58,7 @@ class _BreedsListPageState extends State<BreedListPageBot> {
     );
   }
 
-  void _navigateToChatBot(Breed breed) {
+  void _navigateToChatBot(BreedSelect breed) {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (c) {
