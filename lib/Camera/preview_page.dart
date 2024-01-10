@@ -104,16 +104,4 @@ class PreviewPagaeState extends State<PreviewPage> {
       ),
     );
   }
-
-  Future<void> predicted() async {
-    var client = http.Client();
-    var uri =
-        Uri.parse('http://192.168.254.198:8000/recognition/predict_from_both/');
-    var response = await client.get(uri);
-    if (response.statusCode == 200) {
-      var json = response.body;
-      print("Success");
-      print(response.body);
-    }
-  }
 }

@@ -33,7 +33,6 @@ class _HomeState extends State<Home> {
   List<String> upperName = ['Husky', 'Terrier', 'Boston', 'German'];
   List<String> lowerName = ['Golden Retriever', 'Pug'];
 
-  int _selectedIndex = 0;
   List<CameraDescription>? cameras;
 
   Future<void> _loadDetails() async {

@@ -127,37 +127,6 @@ class DogDetailWithAccuracy extends DogDetail {
   }
 }
 
-void main() {
-  DogDetailWithAccuracy dogDetail = DogDetailWithAccuracy(
-    accuracy: 'hey',
-    description: '',
-    akc: '',
-    avatar: '',
-    height: '',
-    breed: '',
-    character: '',
-    img1: '',
-    weight: '',
-    life: '',
-    img0: '',
-    img: '',
-    type: '',
-  );
-  DogDetail dog = DogDetail(
-      description: dogDetail.accuracy,
-      breed: dogDetail.breed,
-      character: dogDetail.character,
-      height: dogDetail.height,
-      weight: dogDetail.weight,
-      akc: dogDetail.akc,
-      life: dogDetail.life,
-      img: dogDetail.img,
-      img0: dogDetail.img0,
-      img1: dogDetail.img1,
-      type: '',
-      avatar: '');
-}
-
 class ListBreed {
   ListBreed({
     required this.avatar,
